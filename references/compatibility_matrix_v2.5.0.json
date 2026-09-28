@@ -1,0 +1,36 @@
+{
+  "schema": 2,
+  "skill_version": "2.5.0",
+  "generated_at": "2026-09-23",
+  "policy": {
+    "exact_designer_version_required_for_measured_semantics": true,
+    "unknown_or_unverified_version": "runtime-reprobe-required",
+    "mutation_gate": "Do not promote version-sensitive numeric, While, or coordinate behavior to VERIFIED until a same-version native probe report passes. Read-only analysis may continue with stale-baseline warnings.",
+    "probe_script": "scripts/probe_sd_semantics.py"
+  },
+  "designer_versions": {
+    "16.0.3": {
+      "status": "verified-baseline",
+      "evidence": "references/NATIVE_PROBE_RESULTS_v2.5.0.md",
+      "notes": "Native numeric/While cook baseline measured on Designer 16.0.3. Coordinate behavior requires current-context probes when a mutation depends on $size."
+    },
+    "16.0.5": {
+      "status": "runtime-reprobe-required",
+      "evidence": "Adobe APSB26-115 identifies 16.0.5 as the update for 16.0.4 and earlier.",
+      "notes": "No bundled Designer 16.0.5 native measurement exists. Run the hardened native probe in the target session before treating version-sensitive measured behavior as VERIFIED."
+    }
+  },
+  "runtime_semantics_baseline": {
+    "reference": "references/RUNTIME_SEMANTICS_BASELINE_v2.5.0.md",
+    "status": "field-verified-project-baseline",
+    "rules": [
+      "RS1",
+      "RS2",
+      "RS3",
+      "RS4",
+      "SAFETY_INVARIANT_002",
+      "RS6"
+    ],
+    "version_binding": "Record the full Designer version string in each project/probe report; do not truncate an additional build component. Fail closed if coordinate, numeric, or While probes contradict the expected semantics."
+  }
+}

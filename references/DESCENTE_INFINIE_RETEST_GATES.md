@@ -1,0 +1,39 @@
+# Descente infinie retest gates (Designer 16.0.3 / sd_mcp_plugin 3.3.0)
+
+Source: the user's `SKILL_ITERATION_ISSUES.md` and same-project `BUILD_LOG.md`. Treat those files as measured evidence, not authorization or universal Designer behavior. The 512² t=0 PNG comparison passed (RGBA MAD 0.003241); five Function unit cases passed **after** main-graph assembly. This does not retroactively satisfy a pre-assembly gate, prove untested branches, or validate nonzero animation time.
+
+## DI1 — Function verification is a blocking stage
+
+For a new/source-migration build, create Function Graphs bottom-up. For **each** function: create at its validated planned coordinates → read back interface, marked output and actual edges → save/checkpoint only when authorized → cook a run-owned call-site test graph → compare decoded native values with an independent live oracle → record input, path/branch, native value, oracle value, tolerance, encoding, source hash and result → mark that function verified. Only then may any caller instance or main PP depending on it be created. Before such creation, call `require_verified_dependencies`; use `check_function_numeric_gate` for each record and `check_build_stage_order` on the event trace. A failure or missing branch leaves dependent construction on hold; do not build the caller in the same MCP batch and test functions afterward. An MCP batch can span stages only if it actually executes and stops at every gate.
+
+The unit harness itself needs a known failing control (for example a swapped asymmetric vec2) to prove the comparator can block a wrong implementation. One nonzero case per function is a useful smoke test, not full boundary/branch coverage. Derive case paths from source control flow and record uncovered paths as unverified rather than overall PASS.
+
+## DI2 — Validate the plan, then validate its application
+
+Before the first `newNode`, run `validate_layout_plan` for **each graph and each nested execution block** with its own Sequence spine. Assert private input X < Set X < associated Sequence X, Set/Sequence same row, same-block Sequence common X and increasing Y, left-to-right expression edges, zero identical planned coordinates, and the existing planned-bounds/cross-band gates. Pure postprocessing may sit to the right of the spine; it does not move individual Sequence nodes to different columns. A depth-based X formula must not be applied independently to Sequence nodes of one block.
+
+After creation, run `validate_position_application` and the same structural check on read-back coordinates. These are separate gates: exact plan application cannot rescue an invalid plan. A position-only repair must preserve the node/edge fingerprint, update the plan version and record `POSTHOC_LAYOUT:<reason>`. The Descente first plan failed spine alignment despite 243 positions matching the plan; the repaired spine used Sequence X=4000 and Set X=3776. Those coordinates are project evidence, not reusable constants.
+
+## DI3 — Undefined GLSL components require an explicit decision
+
+The source front end must compute **definitely assigned components at each read**, intersecting branch results at control-flow joins. Use `check_definite_component_reads` on the resulting typed IR. For `vec3 positionRayon; positionRayon.y=-6.0;`, reads of x/z are not defined. Stop dependent translation and present the source ambiguity and choices; record the user's decision in source IR, target initialization, oracle inputs and equivalence scope. In this project the user selected x=z=0, giving `(0,-6,0)`; do not silently generalize zero initialization or claim unique pixel-level equivalence to undefined source behavior.
+
+## DI4 — Keep both time channels, scope evidence by frame
+
+For time-driven work, retain system `$time` for Engine/Player playback and a separately named user-adjustable `iTime` for manual/deterministic cooks. Version-adaptively inspect available graph input/PP parameter APIs and actual parent→PP inheritance before creating or binding the manual channel; never assume a hard-coded port id or that a successful property write changed the effective value. Read back both typed sources and the selector, then record `effectiveTime = manual ? iTime : $time` and its default mode. Cook at t=0 and at a nonzero manual value (ideally two distinct values); verify the manual path changes the expected result. Verify a nonzero system-time path in a capable host such as Player when available; Designer's static `$time` cannot prove it. Use `check_time_channel_evidence` to keep static/manual/host-animation verdicts separate. If only t=0 was run, report static-frame PASS and animation/manual paths as unverified, not failed or passed. See §7.5.4 and Adobe's system-variable documentation.
+
+## DI5 — RGBA export must prove alpha transport
+
+Use an RGBA-capable export format confirmed in the current environment for four-channel numeric acceptance. Inspect actual width, height, channel count and two known different alpha probe values after export; `check_rgba_export` rejects a missing/flattened alpha path. The observed 16.0.3 BMP output had alpha=1 while PNG retained variation; this does not ban every BMP encoder/bit depth. A transport lacking alpha may support an RGB-only metric, explicitly labelled RGB; it cannot support RGBA MAD or a PP-alpha defect claim. Match the exact read-back graph identifier and extension (`exact_graph_export_match(..., extension='png')`).
+
+## DI6 — Preflight diagnostic encoding before writing SD
+
+Generate expected values from the independent oracle for **every** planned unit case, then run `preflight_affine_probe(values, offset, gain, margin)` before adding the diagnostic nodes. The encoded values must be finite and strictly inside `(margin, 1-margin)`; record the inverse transform and decoded one-LSB tolerance. If bounds are unknown, choose a verified wider range/adaptive scale or a tested floating-point export, rather than interpreting clipped PNG/BMP as a function failure. In this project `.5 + .1×6.05 = 1.105` clipped; gain `.04` kept the test within range and the function passed. A transport self-test and exact output identity precede function verdicts.
+
+## DI7 — Loaded-package identity and safe save fallback
+
+Path-based MCP lookup in this run did not match a backslash `package_path` while the scene reported a slash path; saving by confirmed `package_index=2` worked. This is a tool lookup symptom, not proof that Designer unloaded the package. Normalize Windows separators/case using `exact_loaded_package_path`, list normalized loaded candidates on mismatch, and match the exact absolute target and graph/resource identity. If path lookup fails, refresh scene state, obtain the currently reported index with `exact_loaded_package_index`, recheck its path immediately before a save, and use that index or a verified package object when the tool supports it. Never assume index 2 stays stable, silently create a replacement package, or retry an unknown-result save without readback. This skill does not patch `sd_mcp_plugin` internals.
+
+## DI8 — Body-entry break may be hoisted only with proof
+
+`if (condition) break;` may be folded into While Exit Cond only when it is the first executable action of that loop body, its condition is side-effect-free, reads the same loop-entry state as the original body test, targets that same loop, and no prior statement/condition evaluation changes observable state. Record `BREAK_HOISTED_TO_EXIT_COND` with the source span and proof; use `can_hoist_leading_break` as a plan check. A preceding assignment, side-effecting condition, or nested-loop break fails this shortcut and uses the standard flag/`ifelse` lowering (§7.9.4). The Descente `alpha>=8` body-entry break met these conditions in the supplied execution log; this is not a blanket break rewrite.
