@@ -1,18 +1,10 @@
 {
-  "source_sha256": "01fca4097f1a5935dfb2736c2ee5d3d41abcc3e62781bbcd9cf89e83abedc858",
   "source": {
-    "sha256": "f1fd84d9ba4f3a604d6afd4015de1e923a80e6a119af6439ba0dfc45ce8992e8",
-    "lines": [
-      4184,
-      4187
-    ],
     "excerpt": [
-      "void FTP_Native(FTP_Curve c, float s, out vec4 X, out vec4 dX) {",
-      "    X = c.c0 + s*(c.c1 + s*(c.c2 + s*c.c3));",
-      "    dX = c.c1 + s*(2.0*c.c2 + 3.0*s*c.c3);",
-      "}"
+      "X = c0 + s*(c1 + s*(c2 + s*c3));",
+      "dX = c1 + s*(2*c2 + 3*s*c3);"
     ],
-    "scope": "FTP_Native body only"
+    "scope": "Anonymized cubic polynomial example; archived numeric outputs retained for regression only."
   },
   "rows": [
     [
