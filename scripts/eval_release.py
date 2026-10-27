@@ -40,7 +40,7 @@ def check_manifest():
         if not p.is_file():
             continue
         rel = p.relative_to(ROOT).as_posix()
-        if rel == 'MANIFEST.json' or rel.startswith('staging/') or '/__pycache__/' in '/' + rel + '/' or rel.endswith('.pyc'):
+        if rel == 'MANIFEST.json' or rel.startswith(('staging/', '.git/')) or '/__pycache__/' in '/' + rel + '/' or rel.endswith('.pyc'):
             continue
         disk_paths.append(rel)
     if set(manifest_paths) != set(disk_paths):

@@ -240,42 +240,16 @@ def _designer_version():
     return m.group(0) if m else 'unknown'
 
 
-def _graph_ids(package):
-    out = []
-    try:
-        resources = package.getChildrenResources(False)
-    except Exception:
-        return tuple()
-    for r in resources:
-        if hasattr(r, 'getNodes'):
-            try:
-                out.append(str(r.getIdentifier()))
-            except Exception:
-                out.append('<?>')
-    return tuple(sorted(out))
-
-
 def _snapshot_preexisting_user_packages():
-    return tuple(sorted([
-        (id(p), str(p.getFilePath() or ''), _graph_ids(p))
-        for p in pkg_mgr.getUserPackages()
-    ]))
+    # Load this skill's scripts directory on sys.path before exec-based invocation.
+    # Missing/unsupported readback fails before newUserPackage, never weak fallback.
+    from runtime_safety import snapshot_user_packages
+    return snapshot_user_packages(pkg_mgr)
 
 
 def _assert_preexisting_unchanged(before):
-    current = {id(p): p for p in pkg_mgr.getUserPackages()}
-    errs = []
-    for oid, path, graphs in before:
-        p = current.get(oid)
-        if p is None:
-            errs.append('pre-existing package disappeared: %s' % (path or '<unsaved>'))
-            continue
-        now = _graph_ids(p)
-        if now != graphs:
-            errs.append('pre-existing package changed: %s before=%s after=%s' %
-                        (path or '<unsaved>', graphs, now))
-    if errs:
-        raise RuntimeError('SAFETY_INVARIANT_001 failed: ' + '; '.join(errs))
+    from runtime_safety import assert_preexisting_packages_unchanged
+    assert_preexisting_packages_unchanged(before, pkg_mgr)
 
 
 def new_graph(name):

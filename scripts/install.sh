@@ -18,13 +18,5 @@ if [ "$SOURCE_DIR" = "$DEST" ]; then
   printf 'Already installed at: %s\n' "$DEST"
   exit 0
 fi
-if [ -e "$DEST" ]; then
-  BACKUP="$DEST.backup.$(date +%Y%m%d%H%M%S)"
-  cp -R "$DEST" "$BACKUP"
-  echo "Existing skill backed up to: $BACKUP"
-  rm -rf "$DEST"
-fi
-cp -R "$SOURCE_DIR" "$DEST"
-rm -rf "$DEST/scripts/__pycache__" 2>/dev/null || true
-printf 'Installed: %s\n' "$DEST"
-printf 'Invoke with: $sd-pixelprocessor-agent\n'
+PYTHON=${SD_PIXEL_AGENT_PYTHON:-python3}
+exec "$PYTHON" -B "$SCRIPT_DIR/install_transaction.py" --source "$SOURCE_DIR" --destination "$DEST"

@@ -21,13 +21,6 @@ if ($SourceResolved -eq $DestResolved) {
 if (-not $DestResolved.StartsWith($DestRootResolved + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
     throw "Refusing install target outside destination root: $DestResolved"
 }
-if (Test-Path $Dest) {
-    $Stamp = Get-Date -Format 'yyyyMMddHHmmss'
-    $Backup = "$Dest.backup.$Stamp"
-    Copy-Item -Recurse -Force $Dest $Backup
-    Write-Host "Existing skill backed up to: $Backup"
-    Remove-Item -Recurse -Force $Dest
-}
-Copy-Item -Recurse -Force $SourceDir $Dest
-Write-Host "Installed: $Dest"
-Write-Host 'Invoke with: $sd-pixelprocessor-agent'
+$Python = if ($env:SD_PIXEL_AGENT_PYTHON) { $env:SD_PIXEL_AGENT_PYTHON } else { 'python' }
+& $Python -B (Join-Path $PSScriptRoot 'install_transaction.py') --source $SourceDir --destination $DestResolved
+if ($LASTEXITCODE -ne 0) { throw 'Transactional install failed; inspect stage/backup and install-lock.' }

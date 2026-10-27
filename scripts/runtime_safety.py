@@ -115,55 +115,27 @@ def remove_owned_probe_dir(path: str) -> None:
 
 
 def graph_identifiers(package: object):
-    out = []
-    try:
-        resources = package.getChildrenResources(False)
-    except Exception:
-        return tuple()
-    for r in resources:
-        if not hasattr(r, "getNodes"):
-            continue
-        try:
-            ident = r.getIdentifier()
-        except Exception:
-            ident = "<?>"
-        out.append(str(ident))
-    return tuple(sorted(out))
+    """Inventory only; not a semantic safety fingerprint."""
+    return tuple(sorted(str(r.getIdentifier()) for r in package.getChildrenResources(True)
+                        if hasattr(r, 'getNodes')))
 
 
-def snapshot_user_packages(package_manager: object):
-    """Capture a non-mutating fingerprint of all pre-existing user packages."""
-    records = []
-    for p in list(package_manager.getUserPackages()):
-        records.append({
-            "object_id": id(p),
-            "file_path": package_file_path(p),
-            "graphs": graph_identifiers(p),
-        })
-    return tuple(sorted(records, key=lambda x: x["object_id"]))
+def snapshot_user_packages(package_manager: object, graph_reader=None):
+    from graph_evidence import package_snapshot, digest
+    return tuple({'object_id': id(p), 'file_path': str(p.getFilePath() or ''),
+                  'semantic_hash': digest(package_snapshot(p, graph_reader))}
+                 for p in package_manager.getUserPackages())
 
 
-def assert_preexisting_packages_unchanged(before, package_manager: object, owned_package: object = None) -> None:
-    """Fail if a pre-existing package's graph fingerprint changed during a probe."""
-    current_by_id = {id(p): p for p in list(package_manager.getUserPackages())}
-    errors = []
-    owned_id = id(owned_package) if owned_package is not None else None
+def assert_preexisting_packages_unchanged(before, package_manager: object,
+                                         owned_package: object = None, graph_reader=None):
+    from graph_evidence import package_snapshot, digest
+    current = {id(p): p for p in package_manager.getUserPackages()}
     for rec in before:
-        oid = rec["object_id"]
-        if oid == owned_id:
-            continue
-        p = current_by_id.get(oid)
-        if p is None:
-            errors.append("pre-existing package disappeared: %s" % (rec["file_path"] or "<unsaved>"))
-            continue
-        now = graph_identifiers(p)
-        if now != rec["graphs"]:
-            errors.append(
-                "pre-existing package graph set changed: %s before=%s after=%s" %
-                (rec["file_path"] or "<unsaved>", rec["graphs"], now)
-            )
-    if errors:
-        raise RuntimeError("SAFETY_INVARIANT_001 failed: " + "; ".join(errors))
+        # A pre-existing resource cannot become exempt by registering it as owned.
+        p = current.get(rec['object_id'])
+        if p is None or digest(package_snapshot(p, graph_reader)) != rec['semantic_hash']:
+            raise RuntimeError('SAFETY_INVARIANT_001: pre-existing package changed: ' + rec['file_path'])
 
 
 def detect_designer_version(app: object) -> str:

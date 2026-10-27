@@ -154,20 +154,32 @@ def check_build_stage_order(events: Iterable[Mapping[str, object]]) -> list[str]
                 stage[function] = next_stage + 1
                 if kind == 'function_gate_pass':
                     verified.add(function)
+        elif kind == 'function_modified':
+            function = str(event.get('function', ''))
+            verified.discard(function)
+            stage.pop(function, None)
         elif kind == 'caller_start':
             caller = str(event.get('caller', ''))
             for dependency in event.get('requires', ()):
                 if dependency not in verified:
                     errors.append(f'CALLER_BEFORE_FUNCTION_GATE:{caller}:{dependency}')
+        else:
+            errors.append(f'UNKNOWN_BUILD_EVENT:{kind}')
     return errors
 
 
-def require_verified_dependencies(caller: str, dependencies: Iterable[str],
-                                  verified: Iterable[str]) -> None:
-    """Call immediately before a builder creates a caller or PP instance."""
-    missing = sorted(set(dependencies) - set(verified))
-    if missing:
-        raise ValueError(f'CALLER_BEFORE_FUNCTION_GATE:{caller}:{",".join(missing)}')
+def require_verified_dependencies(caller: str, dependencies,
+                                  verified, *, current=None) -> None:
+    """Production calls require content-bound EvidenceRegistry and live identities.
+
+    Legacy name sets cannot establish freshness and are intentionally rejected.
+    check_build_stage_order remains an ordering audit, never a release permission.
+    """
+    from workflow_guards import EvidenceRegistry
+    if not isinstance(verified, EvidenceRegistry) or current is None:
+        raise ValueError('CONTENT_BOUND_EVIDENCE_REQUIRED:' + caller)
+    for resource in dependencies:
+        verified.require(resource, current)
 
 
 def check_definite_component_reads(reads: Iterable[Mapping[str, object]]) -> list[str]:

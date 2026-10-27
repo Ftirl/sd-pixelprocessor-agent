@@ -10,6 +10,11 @@ WHILE_REF = ROOT / "references" / f"WHILE_OFFICIAL_BASELINE_v{VERSION_EXPECTED}.
 
 required = [
     ROOT / "SKILL.md",
+    ROOT / "BEHAVIOR_REVISION",
+    ROOT / "references/EXECUTION_RULES.md",
+    ROOT / "references/OPERATIONAL_RECOVERY.md",
+    ROOT / "references/LARGE_PROJECT_ASSEMBLY.md",
+    ROOT / "references/DEPENDENCY_COMPACT_LAYOUT.md",
     ROOT / "VERSION",
     SPEC,
     ROOT / "references" / "REAL_PROJECT_VALIDATION.md",
@@ -144,8 +149,9 @@ if not errors:
         "fmod", "round_float1", "native cook", "NATIVE_PROBE_RESULTS",
         "silent 0", "probe_sd_semantics", "COMPATIBILITY_MATRIX_v2.5.0", "RUNTIME_REPROBE_REQUIRED", VERSION_EXPECTED,
     ]
+    routed_rules = (ROOT / 'references/EXECUTION_RULES.md').read_text(encoding='utf-8')
     for anchor in skill_anchors:
-        if anchor not in skill:
+        if anchor not in skill and anchor not in routed_rules:
             errors.append(f"SKILL.md missing anchor: {anchor}")
 
     while_anchors = [
@@ -180,7 +186,7 @@ if not errors:
         "原子节点已覆盖全部数值函数",
     ]
     for phrase in forbidden:
-        if phrase in spec or phrase in skill:
+        if phrase in spec or phrase in skill or phrase in routed_rules:
             errors.append(f"obsolete rule still present: {phrase}")
 
     # v2 production-safety invariants: prevent regression to the v1 probe hazards.
@@ -216,7 +222,7 @@ if not errors:
         if anchor not in runtime_ref:
             errors.append(f"runtime semantic baseline missing anchor: {anchor}")
     for anchor in ("SAFETY_INVARIANT_002", "Pixel Processor `$pos` is normalized", "Sequence-derived vectors", "RUNTIME_SEMANTICS_BASELINE_v2.5.0.md"):
-        if anchor not in skill:
+        if anchor not in skill and anchor not in routed_rules:
             errors.append(f"SKILL.md missing runtime anchor: {anchor}")
 
     for anchor in ("coord_pos_x", "coord_size_x", "get_float2"):

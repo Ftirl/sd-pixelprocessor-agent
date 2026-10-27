@@ -24,7 +24,7 @@ def collect():
         if not p.is_file():
             continue
         rel = p.relative_to(ROOT).as_posix()
-        if rel in EXCLUDE or rel.startswith('staging/') or '/__pycache__/' in '/' + rel + '/' or rel.endswith('.pyc'):
+        if rel in EXCLUDE or rel.startswith(('staging/', '.git/')) or '/__pycache__/' in '/' + rel + '/' or rel.endswith('.pyc'):
             continue
         rows.append({'path': rel, 'sha256': sha256(p), 'bytes': p.stat().st_size})
     return rows
