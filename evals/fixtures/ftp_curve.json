@@ -1,0 +1,141 @@
+{
+  "source_sha256": "01fca4097f1a5935dfb2736c2ee5d3d41abcc3e62781bbcd9cf89e83abedc858",
+  "source": {
+    "sha256": "f1fd84d9ba4f3a604d6afd4015de1e923a80e6a119af6439ba0dfc45ce8992e8",
+    "lines": [
+      4184,
+      4187
+    ],
+    "excerpt": [
+      "void FTP_Native(FTP_Curve c, float s, out vec4 X, out vec4 dX) {",
+      "    X = c.c0 + s*(c.c1 + s*(c.c2 + s*c.c3));",
+      "    dX = c.c1 + s*(2.0*c.c2 + 3.0*s*c.c3);",
+      "}"
+    ],
+    "scope": "FTP_Native body only"
+  },
+  "rows": [
+    [
+      [
+        2,
+        -3,
+        0.25,
+        -2
+      ],
+      [
+        -1,
+        4,
+        0.5,
+        3
+      ],
+      [
+        0.25,
+        -0.5,
+        2,
+        -4
+      ],
+      [
+        1,
+        -2,
+        0.125,
+        0.5
+      ]
+    ],
+    [
+      [
+        100,
+        -0.125,
+        -6,
+        7
+      ],
+      [
+        -8,
+        0.5,
+        3,
+        -2
+      ],
+      [
+        4,
+        -3,
+        0.25,
+        1
+      ],
+      [
+        -0.25,
+        2,
+        -1,
+        0.125
+      ]
+    ],
+    [
+      [
+        0,
+        1,
+        -1,
+        0.375
+      ],
+      [
+        0,
+        -1,
+        2,
+        -0.75
+      ],
+      [
+        -2,
+        1,
+        0,
+        1.5
+      ],
+      [
+        3,
+        0,
+        -2,
+        -3
+      ]
+    ],
+    [
+      [
+        -2,
+        -4,
+        -8,
+        -16
+      ],
+      [
+        1,
+        2,
+        4,
+        8
+      ],
+      [
+        0.125,
+        -0.25,
+        0.5,
+        -1
+      ],
+      [
+        -0.5,
+        1,
+        -2,
+        4
+      ]
+    ]
+  ],
+  "raw": {
+    "writer": {
+      "file": "ftp_writer_32x4_rgba32f.raw",
+      "sha256": "0ee509bb6b331f676225081d696a1fc90b7deca85a106324700c69b540dccea6"
+    },
+    "ReaderX": {
+      "file": "ftp_ReaderX_16x4_rgba32f.raw",
+      "sha256": "7323fd19142b532f3fd92206f1273b38094dc99748bb3429b5f2e834126213ed"
+    },
+    "ReaderDX": {
+      "file": "ftp_ReaderDX_16x4_rgba32f.raw",
+      "sha256": "ed9a976b861841c2b2c8316f4e4c2dbdd42ccdff359b4ee985ef8a27a4f7b876"
+    },
+    "Predictor": {
+      "file": "ftp_Predictor_16x4_rgba32f.raw",
+      "sha256": "3f968fcaad3bd3b9e1a2d7e3839355ce8bf4908a5f91c7d999614d08793764ec"
+    }
+  }
+}
