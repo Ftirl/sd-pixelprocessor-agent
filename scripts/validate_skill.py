@@ -18,9 +18,9 @@ required = [
     ROOT / "VERSION",
     SPEC,
     ROOT / "references" / "REAL_PROJECT_VALIDATION.md",
-    ROOT / "references" / "MORPHING_RETEST_GATES.md",
-    ROOT / "references" / "SUN_SHOWER_RETEST_GATES.md",
-    ROOT / "references" / "DESCENTE_INFINIE_RETEST_GATES.md",
+    ROOT / "references" / "CASE_A_RETEST_GATES.md",
+    ROOT / "references" / "CASE_B_RETEST_GATES.md",
+    ROOT / "references" / "CASE_D_RETEST_GATES.md",
     ROOT / "scripts" / "project_validation.py",
     ROOT / "scripts" / "layout_intelligence.py",
     ROOT / "references" / f"SD_BUILTIN_FUNCTIONS_v{VERSION_EXPECTED}.md",
@@ -130,7 +130,7 @@ if not errors:
         "L14：跨度预算按语句带数与表达式深度归一化",
         "L15：禁止跨带长连线（读取走上游 Get）",
         "11.7 语句树连接与跨度实测基线",
-        "0372b50801013d2ae1be57806778a8799223042e7bd57429caaf8326362ed41f",
+        "color_example.sbs",
         "LOOP_UNROLL_EXCEPTION", "D25", "D26", "D30", "D31", "D32",
     ]
     for anchor in spec_anchors:
@@ -139,7 +139,7 @@ if not errors:
 
     skill_anchors = [
         "Variable-version boundary", "While loop baseline", "same reachable chain's later `Last` branch",
-        "DESCENTE_INFINIE_RETEST_GATES.md", "validate_layout_plan",
+        "CASE_D_RETEST_GATES.md", "validate_layout_plan",
         "Every source loop format lowers to a structured `While`",
         "Plan While connections before wiring",
         "sbs::function::while", "LOOP_UNROLL_EXCEPTION", "7.9.10", "7.10", "SOP-5B",
@@ -203,7 +203,7 @@ if not errors:
         if anchor not in probe_src:
             errors.append(f"probe safety anchor missing: {anchor}")
     safety_forbidden = [
-        r'E:\\SD_AI\\_probe\\out',
+        r'Z:\\example\\probe\\out',
         "scratches = [p for p in pkg_mgr.getUserPackages()",
         "PKG = scratches[0]",
         "for f in os.listdir(OUT_DIR):\n        try:\n            os.remove",

@@ -37,11 +37,13 @@ Then verify against the shipped XML and render the catalogue:
 """
 import json
 import os
+import tempfile
+import tempfile
 
 import sd
 from sd.api.sdproperty import SDPropertyCategory as C
 
-OUT_JSON = os.environ.get('SD_LIB_DUMP', r'E:\SD_AI\_probe\library_dump.json')
+OUT_JSON = os.environ.get('SD_LIB_DUMP') or os.path.join(tempfile.mkdtemp(prefix='sd_library_dump_'), 'library_dump.json')
 LIB_PKG = None          # set to an absolute path to override detection
 
 app = sd.getContext().getSDApplication()
