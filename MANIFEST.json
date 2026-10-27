@@ -19,7 +19,7 @@
     },
     {
       "path": "BEHAVIOR_REVISION",
-      "sha256": "53b038fa310566e12f2985f02c851cc8716266fb88e42d31b2ac7eed7ff2831d",
+      "sha256": "12bbbbca2a0ab415aa42da31cb04cefb515cffaf550a39eff1108396653eebd5",
       "bytes": 13
     },
     {
@@ -29,8 +29,8 @@
     },
     {
       "path": "evals/fixtures/ftp_curve.json",
-      "sha256": "abb17e9aed4b30eb44d9bdf42a8e2da5904dce1f4a9066478de30f159fadfafb",
-      "bytes": 2222
+      "sha256": "1164752ced34e616369ee82bd5703057a06ec16ef0b213bb3c4915d0b01a5c29",
+      "bytes": 1969
     },
     {
       "path": "evals/fixtures/ftp_Predictor_16x4_rgba32f.raw",
@@ -54,8 +54,8 @@
     },
     {
       "path": "evals/fixtures/ksr_positions.json",
-      "sha256": "d6a9eadbfbfec824f9bc1f211d65744c96d96f2584a0bb0a998a8cd8a2246808",
-      "bytes": 10321
+      "sha256": "222bf07f7064267dbc8d5adeee32fe2ffacf77cec118200f4c4a30375e5a257e",
+      "bytes": 21468
     },
     {
       "path": "evals/test_graph_refactor.py",
@@ -64,13 +64,13 @@
     },
     {
       "path": "evals/test_layout_intelligence.py",
-      "sha256": "a7884f42b65d9dc9b01d6ff5ce0b20742cb85678abecf99d701b087af6e37c3a",
-      "bytes": 5959
+      "sha256": "d61a70439280ce52daf777dae7f78a59a27ba2ef58cd7154b5c028e78b86ed2c",
+      "bytes": 5957
     },
     {
       "path": "evals/test_operational_guards.py",
-      "sha256": "d1eb6a91a742aa9c85a52d72590570c69d638595a3199217348045c7bd287214",
-      "bytes": 17030
+      "sha256": "88a34af83763123cbb8262ff1294da1eaf3896a923e79d108c7d527fc6c32d29",
+      "bytes": 16990
     },
     {
       "path": "evals/test_package_lifecycle.py",
@@ -79,8 +79,8 @@
     },
     {
       "path": "evals/test_project_validation.py",
-      "sha256": "b4102d1c893101baec04c6a101d9584517665bd7e4aa1c70491619342af6025e",
-      "bytes": 14584
+      "sha256": "a806b6279fd39c06e6ee532f036e2bc013ab4cb26d0352d414d410305bc4d3e8",
+      "bytes": 14550
     },
     {
       "path": "evals/test_release_git_exclusion.py",
@@ -89,8 +89,8 @@
     },
     {
       "path": "evals/test_release_policy.py",
-      "sha256": "ccab8373028ae988e2be5527c02af92bb9c005f88a1298281d0dba60fa72e963",
-      "bytes": 6851
+      "sha256": "5ed1141921e0d09f0cfa7d3feb05f95256a20c3ed3f8496e72ca0c293aace18d",
+      "bytes": 6840
     },
     {
       "path": "evals/test_runtime_safety.py",
@@ -109,8 +109,28 @@
     },
     {
       "path": "README.md",
-      "sha256": "87e1783d1fc0c034c9bc3cf05325acf72f381ed82945b36f2877788f1e6d03d9",
-      "bytes": 6797
+      "sha256": "9f9e2e73c6859cd6eab8c691c61238d635f304f581fbeff5bfd412a41b135efb",
+      "bytes": 7450
+    },
+    {
+      "path": "references/CASE_A_RETEST_GATES.md",
+      "sha256": "a90e5a78147a3fd810b9d82b824b724fcf9df6e9bbbb9bdeb2aff59620e4e241",
+      "bytes": 8944
+    },
+    {
+      "path": "references/CASE_B_RETEST_GATES.md",
+      "sha256": "7d6c95976f859b3518ef4b116932da62d2de3454bf2f8978dd84311d80a0bdf7",
+      "bytes": 11744
+    },
+    {
+      "path": "references/CASE_C_RETEST_GATES.md",
+      "sha256": "70bd5e30da70f13dad5258fbcc811c6d1228b20cccc4591a61b7170d595ff5e4",
+      "bytes": 10648
+    },
+    {
+      "path": "references/CASE_D_RETEST_GATES.md",
+      "sha256": "ebf51b70120d1eb82252b89494904da92307827c52c4f29fd2886aff7b907bf4",
+      "bytes": 8375
     },
     {
       "path": "references/compatibility_matrix_v2.5.0.json",
@@ -123,24 +143,14 @@
       "bytes": 2968
     },
     {
-      "path": "references/CRATE_AT_DUSK_RETEST_GATES.md",
-      "sha256": "d77c03b8263e2b2d7a8d86835dc99fb20eb876947263a76c305eaee760fcf3db",
-      "bytes": 10682
-    },
-    {
       "path": "references/DEPENDENCY_COMPACT_LAYOUT.md",
-      "sha256": "f6cb16d8e3aea84135ac43490fb7dc0a27d596d8b29eaef28d90e22289e49f4a",
-      "bytes": 3497
-    },
-    {
-      "path": "references/DESCENTE_INFINIE_RETEST_GATES.md",
-      "sha256": "43861e31258cfcbf68a65cc0ce27549ba525649a2311505e02f625acc941d3ee",
-      "bytes": 8352
+      "sha256": "1d553e80c413db3b09dd41f1b1e907430ddda1cb6fe06454fe349a7287f3613c",
+      "bytes": 3468
     },
     {
       "path": "references/EXECUTION_RULES.md",
-      "sha256": "fc3d2a5e55ed131e91909012f98875b7fe011e187a5494bff91ed784c8b0e986",
-      "bytes": 40418
+      "sha256": "4100f5e04d20c0e8141794bce595b5cfa0bb34141736d0b4026f3a876b81d339",
+      "bytes": 40400
     },
     {
       "path": "references/GRAPH_REFACTOR_ENGINE_v2.5.0.md",
@@ -149,8 +159,8 @@
     },
     {
       "path": "references/LARGE_PROJECT_ASSEMBLY.md",
-      "sha256": "f3989f10a193080d2dcc9d534787c20202cb165888a8118b9a627158f9395401",
-      "bytes": 8408
+      "sha256": "5073cac017bd28eff3b1865db929cd72169a8853ee4a26a2d49428985af5f4e1",
+      "bytes": 8434
     },
     {
       "path": "references/library_functions_v2.5.0.json",
@@ -158,14 +168,9 @@
       "bytes": 339717
     },
     {
-      "path": "references/MORPHING_RETEST_GATES.md",
-      "sha256": "64c96fc10b368926b008094ff2e8553f9365b01d1c43902af3299f949dfa3453",
-      "bytes": 8973
-    },
-    {
       "path": "references/NATIVE_PROBE_RESULTS_v2.5.0.md",
-      "sha256": "6fad94db7c825d4ff312d011cf791f30755fe3e132d7e0d11f3348bd15c01d95",
-      "bytes": 10290
+      "sha256": "02529979ee60805794a4bf0d45e612261f8cbc6097633f347828021eddd68613",
+      "bytes": 10302
     },
     {
       "path": "references/OPERATIONAL_RECOVERY.md",
@@ -174,23 +179,23 @@
     },
     {
       "path": "references/PRODUCTION_HARDENING_v2.5.0.md",
-      "sha256": "511f5a1b5d924d9068143dda3f87d2826b379bb616968c9489579164da525091",
-      "bytes": 3681
+      "sha256": "11c04d98fb0143fce089a2a2c01c68945cfc609ca2da5c1cd55f36c30982cec6",
+      "bytes": 3703
     },
     {
       "path": "references/REAL_PROJECT_VALIDATION.md",
-      "sha256": "2c0ce799f836334be9467c238c6da13f669ac42579195f04e0c4a1302370dc4b",
-      "bytes": 10064
+      "sha256": "108130c3c5e6cb6ec60e8e25cb876f8f60e2aa2c33d493f7f7f5a90d411cfe1b",
+      "bytes": 10012
     },
     {
       "path": "references/RUNTIME_SEMANTICS_BASELINE_v2.5.0.md",
-      "sha256": "7204efc0549bee1c44ed7a038cf5b52ca8bd08796deabf03c180454ae45c7142",
-      "bytes": 9353
+      "sha256": "f669e2601d35a2362e6724d945a2591a8a5c1f3369e09dcf3b058aaa49f8d388",
+      "bytes": 9338
     },
     {
       "path": "references/SD_BUILTIN_FUNCTIONS_v2.5.0.md",
-      "sha256": "ad5aeb402bba4b221a2cb7b0720fc930a5b3aa1133467cd9119c4f09dfab2f85",
-      "bytes": 15525
+      "sha256": "68837838edb2e2ab1ab47aa46bb7322971b46cfc591ada7fd67d3ed2df981229",
+      "bytes": 15523
     },
     {
       "path": "references/SD_LIBRARY_FUNCTIONS_v2.5.0.md",
@@ -199,18 +204,13 @@
     },
     {
       "path": "references/SD_PixelProcessor_AGENT_SPEC_v2.5.0.md",
-      "sha256": "1aac89c254f5260ea5d815115118124a4e571f190ec260a480010a683d113dac",
-      "bytes": 242252
-    },
-    {
-      "path": "references/SUN_SHOWER_RETEST_GATES.md",
-      "sha256": "16b03236e361107cf889d4e5dc6256ea5a75aa26524ca2f1e3545cf36c8e0232",
-      "bytes": 11762
+      "sha256": "ad2e0e0f25cb69f80bf74adc335ef2250c895c18e340a37a9e2b0823a1689741",
+      "bytes": 242141
     },
     {
       "path": "references/WHILE_OFFICIAL_BASELINE_v2.5.0.md",
-      "sha256": "541847aad9b8e82bd615b151ca11fef70e7b1e20c14fcd33da93e40abe1237d8",
-      "bytes": 13621
+      "sha256": "473a5531a03dddda287b38265947e7cd8477d4f8acc1ba05782c77d38f94cbd4",
+      "bytes": 13623
     },
     {
       "path": "scripts/assembly_contracts.py",
@@ -229,8 +229,8 @@
     },
     {
       "path": "scripts/dump_library_functions.py",
-      "sha256": "af02a4f4cdf202210c0088f05e1e72b2a199d7fb9d618e5eb6a9e4871f8b2f7b",
-      "bytes": 11368
+      "sha256": "93fe48653981f3c55ab82f20db5e108b8aa8ad7e7d254852d0c8cba1f4e7e2ca",
+      "bytes": 11444
     },
     {
       "path": "scripts/eval_release.py",
@@ -304,8 +304,8 @@
     },
     {
       "path": "scripts/validate_skill.py",
-      "sha256": "b7e38e35db5a76bb40610e96c08ab87a299dd4fe922473a03774cae67f1dc0a1",
-      "bytes": 14024
+      "sha256": "32571e9cda295fd88aa186683a86e78e773e72b77627942c9135fce02f6f3b2d",
+      "bytes": 13952
     },
     {
       "path": "scripts/verify_library_functions.py",
@@ -324,8 +324,8 @@
     },
     {
       "path": "SKILL.md",
-      "sha256": "f0c21a36d3fa4b32261fecce3aa5136a288b88f11fe7b4a92a5112afb108f0c9",
-      "bytes": 14933
+      "sha256": "10d4e9a0c8bded6357bf5600f258dfe53e56e16a554fdb16d4c281a3473ad0fb",
+      "bytes": 14903
     },
     {
       "path": "VERSION",

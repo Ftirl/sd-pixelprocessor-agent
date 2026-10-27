@@ -10,9 +10,9 @@ The current execution specification is:
 
 `references/SD_PixelProcessor_AGENT_SPEC_v2.5.0.md`
 
-Read only the sections needed for the current task, then expand when a dependency requires it. For real-project failure gates and evidence limits, use `references/REAL_PROJECT_VALIDATION.md`, `references/MORPHING_RETEST_GATES.md`, `references/SUN_SHOWER_RETEST_GATES.md`, `references/CRATE_AT_DUSK_RETEST_GATES.md`, and `references/DESCENTE_INFINIE_RETEST_GATES.md`; measured examples are not universal API contracts.
+Read only the sections needed for the current task, then expand when a dependency requires it. For real-project failure gates and evidence limits, use `references/REAL_PROJECT_VALIDATION.md`, `references/CASE_A_RETEST_GATES.md`, `references/CASE_B_RETEST_GATES.md`, `references/CASE_C_RETEST_GATES.md`, and `references/CASE_D_RETEST_GATES.md`; measured examples are not universal API contracts.
 
-## Project workflow and operational revision (2026-10-27)
+## Project workflow and operational revision ([historical validation])
 
 For large or multi-pass migrations, load [LARGE_PROJECT_ASSEMBLY.md](references/LARGE_PROJECT_ASSEMBLY.md): visible layer milestones, typed multi-PP/LUT interfaces, large-function tiers, explicit visual-first decisions, and standalone package acceptance. It amends the strict SOP-5B/DI1 assembly lock only for the documented, user-selected `PROVISIONAL_VISUAL_ASSEMBLY` path; unverified functions never become verified dependencies by exception.
 
@@ -52,7 +52,7 @@ When SD MCP or equivalent live tools are available, calls that affect or inspect
 
 Read these sections before executing the corresponding task:
 
-- Always: §0–§3. For GLSL/Shadertoy migration or builder/layout failures also read the relevant project gates in `references/REAL_PROJECT_VALIDATION.md`, `references/MORPHING_RETEST_GATES.md`, `references/SUN_SHOWER_RETEST_GATES.md`, and `references/CRATE_AT_DUSK_RETEST_GATES.md`.
+- Always: §0–§3. For GLSL/Shadertoy migration or builder/layout failures also read the relevant project gates in `references/REAL_PROJECT_VALIDATION.md`, `references/CASE_A_RETEST_GATES.md`, `references/CASE_B_RETEST_GATES.md`, and `references/CASE_C_RETEST_GATES.md`.
 - General graph analysis/repair: §4, §5, §7, §9.
 - Large graph or reusable-function work: §4.5 A1–A11, I21–I25, SOP-5A, §7.7, §10.
 - Loop/state work: §4.2, SOP-3, SOP-3A, §7.2–§7.4, `references/WHILE_OFFICIAL_BASELINE_v2.5.0.md`, relevant D rules in §8.
@@ -61,13 +61,13 @@ Read these sections before executing the corresponding task:
 - Statement-tree connections + span/node budget: **§7.10** (Set → statement Sequence → local value consumers → pure terminal, allowed/forbidden wires, measured geometry, normalized span in §7.10.4, node-count budget in §7.10.5, read-only statistics template) + N26, W15–W16, I37–I38, L14–L15, D31–D32, `§11.7`.
 - Function Graph/interface work: §4.1, SOP-4, SOP-5A, §7.1, §7.7.
 - **New build / source migration (functionize first, then assemble)**: **A12 + SOP-5B** (source function table → interfaces → bottom-up function creation with per-function I1/I2/I9/I10/I23 → instance assembly with I11 → main-graph statement structure), plus `§7.9.11` when a loop body is functionized. Use A8 only for repairing an existing graph.
-- Descente retest issues in a new GLSL migration: `references/DESCENTE_INFINIE_RETEST_GATES.md` DI1–DI8 (pre-caller Function numeric gate, precreation Sequence-spine plan check, undefined components, dual time channels, alpha-preserving export, diagnostic-encoding preflight, loaded-package save identity, proved body-entry break hoist).
+- Case D retest issues in a new GLSL migration: `references/CASE_D_RETEST_GATES.md` DI1–DI8 (pre-caller Function numeric gate, precreation Sequence-spine plan check, undefined components, dual time channels, alpha-preserving export, diagnostic-encoding preflight, loaded-package save identity, proved body-entry break hoist).
 - Layout-only work: I13/I13b/I20/I30, **I37/I38/I39**, SOP-8 (mode A new build / mode B existing graph), §10 (incl. L2–L4 and L12–L16), plus Architecture Gate rules from §4.5. Use `scripts/layout_intelligence.py` to check planned and read-back statement geometry.
 - Built-in function semantics, availability and lookups (on demand): `references/SD_BUILTIN_FUNCTIONS_v2.5.0.md` plus `scripts/lookup_sd_function.py` — consult it whenever a math function's SD identity, ports or exact semantics matter. For measured numeric/loop behaviour (including what SD silently does wrong) read `references/NATIVE_PROBE_RESULTS_v2.5.0.md` and run `scripts/probe_sd_semantics.py` for the current environment. For the **verified library catalogue** (171 built-in Functions, verified node-by-node against the shipped package) use `references/SD_LIBRARY_FUNCTIONS_v2.5.0.md` / `references/library_functions_v2.5.0.json`, and regenerate with `scripts/dump_library_functions.py` + `scripts/verify_library_functions.py` when the SD version or package differs.
 - Runtime semantic baseline: `references/RUNTIME_SEMANTICS_BASELINE_v2.5.0.md` (RS1–RS6, `SAFETY_INVARIANT_002`) and `scripts/runtime_semantics.py`.
 - Runtime version safety / production hardening: `references/COMPATIBILITY_MATRIX_v2.5.0.md`, `references/PRODUCTION_HARDENING_v2.5.0.md`, `scripts/check_compatibility.py`, and `scripts/eval_release.py`.
 - GLSL/HLSL migration: SOP-0A, §4.3, §7.3–§7.10, **§7.5.1** (mul/mulscalar selection table), **§7.5.2** (atan2/vector2/cartesian official semantics), **§7.5.3** (numeric semantics: mod/fmod/round/frac/trunc/sign/clamp/step/smoothstep), relevant diagnostics in §8, plus `REAL_PROJECT_VALIDATION.md`.
-- Time-driven graphs, vector assembly, library availability, diagnostic taps, or branch-heavy shader migration: `CRATE_AT_DUSK_RETEST_GATES.md` plus the relevant §7.5/§7.6/§7.11 sections. Apply the project-tested gates in the current graph/version, not as universal engine claims.
+- Time-driven graphs, vector assembly, library availability, diagnostic taps, or branch-heavy shader migration: `CASE_C_RETEST_GATES.md` plus the relevant §7.5/§7.6/§7.11 sections. Apply the project-tested gates in the current graph/version, not as universal engine claims.
 - Final delivery: §9 and SOP-9.
 
 If a task crosses categories, load all relevant sections rather than applying one section in isolation.
@@ -78,7 +78,7 @@ Load [EXECUTION_RULES.md](references/EXECUTION_RULES.md), selecting its semantic
 
 For evidence, retries, provisional assembly, performance escalation, frames or installation, load [OPERATIONAL_RECOVERY.md](references/OPERATIONAL_RECOVERY.md). `BEHAVIOR_REVISION` identifies policy/tool changes separately from the 2.5.0 runtime baseline.
 
-Core constraints: preserve the user's structural mode; every source loop uses structured While unless an explicit documented exception applies; protect exact package identity; plan placement before creation; keep numeric, structural, visual and native verdicts separate. Unknown tool outcomes are not permission to replay writes. Existing authorization persists.
+Core constraints: preserve an anonymized case’s structural mode; every source loop uses structured While unless an explicit documented exception applies; protect exact package identity; plan placement before creation; keep numeric, structural, visual and native verdicts separate. Unknown tool outcomes are not permission to replay writes. Existing authorization persists.
 
 ## Mutation workflow
 

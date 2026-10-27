@@ -8,7 +8,7 @@
 
 它不是 Substance Painter 工具，也不替代 Designer 的实际运行验证。仓库中的版本相关结论与项目实测记录有明确适用范围；换用其他 Designer 版本或项目时，应按 [SKILL.md](SKILL.md) 和对应参考资料重新探测，不能把既有测量结果当成通用 API 保证。
 
-### 当前更新：2026-10-27.1
+### 当前更新：2026-10-27.2
 
 运行时基线仍为 `2.5.0`；`BEHAVIOR_REVISION` 单独记录行为与工具修订。本次增加大型项目分层推进、多 PP/LUT 数据契约、原 Skill 约束下的局部布局优化，以及用户选择的临时画面组装路径。
 
@@ -16,7 +16,7 @@
 
 **兼容性变化：** `require_verified_dependencies` 不再接受仅含函数名的集合。请按 [操作与恢复指南](references/OPERATIONAL_RECOVERY.md) 使用 `EvidenceRegistry`、当前身份映射和绑定的数值记录。安装脚本需要 Python；不在 PATH 时设置 `SD_PIXEL_AGENT_PYTHON`。
 
-本轮安装版通过 98 项测试；发布版另增加 Git 元数据排除回归测试。原生只读检查覆盖 GeometryScalars 的 5 个资源和精简黑洞包的 117 个资源。夹具中的 FTP 原生输出为已核对哈希的历史数据，不代表本轮重新渲染。检查器不等于自动布局器、崩溃恢复看门狗或宿主跨帧调度器。
+本轮安装版通过 98 项测试；发布版另增加 Git 元数据排除回归测试。原生只读检查覆盖 scalar example 的 5 个资源和大型示例包的 117 个资源。夹具中的 FTP 原生输出为已核对哈希的历史数据，不代表本轮重新渲染。检查器不等于自动布局器、崩溃恢复看门狗或宿主跨帧调度器。
 
 ### 安装与使用
 
@@ -43,7 +43,7 @@ This Agent Skill is for **Substance 3D Designer Pixel Processor and Function Gra
 
 It is not a Substance Painter tool or a substitute for validation in Designer. Version-specific findings and real-project retests in this repository have defined evidence limits. For a different Designer version or project, follow [SKILL.md](SKILL.md) and the relevant references to re-probe behavior; do not treat earlier measurements as universal API guarantees.
 
-### Current update: 2026-10-27.1
+### Current update: 2026-10-27.2
 
 The runtime baseline remains `2.5.0`; `BEHAVIOR_REVISION` identifies policy and tooling changes separately. This update adds visible layer milestones, multi-PP/LUT contracts, local layout refinement under the existing Skill rules, and an explicitly user-selected provisional visual assembly path.
 
@@ -51,7 +51,7 @@ Operational hardening includes graph-content snapshots, artifact-bound function 
 
 **Migration:** `require_verified_dependencies` no longer accepts name-only sets. Use `EvidenceRegistry`, fresh identity mappings and bound numeric records as documented in [Operational recovery](references/OPERATIONAL_RECOVERY.md). Installers require Python; set `SD_PIXEL_AGENT_PYTHON` when it is not on PATH.
 
-The installed revision passed 98 tests; this repository additionally tests exclusion of Git metadata. Native read-only checks covered 5 GeometryScalars resources and 117 compact black-hole resources. Bundled FTP native outputs are hash-verified historical fixtures, not fresh renders. These guards are not an automatic layout optimizer, crash watchdog, or host frame scheduler.
+The installed revision passed 98 tests; this repository additionally tests exclusion of Git metadata. Native read-only checks covered 5 scalar example resources and 117 large example resources. Bundled FTP native outputs are hash-verified historical fixtures, not fresh renders. These guards are not an automatic layout optimizer, crash watchdog, or host frame scheduler.
 
 ### Install and use
 
@@ -71,3 +71,9 @@ Invoke `$sd-pixelprocessor-agent` in a conversation and provide the specific Des
 - `evals/`: behavioral tests; `VERSION` and `MANIFEST.json`: release version and file hashes.
 
 Run `python scripts/eval_release.py` from the repository root before a release. Some native probes must also run inside a matching Substance 3D Designer session. Passing offline tests does not establish that a target project has passed its cook or graph-structure checks. User `.sbs` project files are not included.
+
+## Public example privacy / 公开示例脱敏
+
+Project names, private discussion links, original local paths, source-file fingerprints and node identifiers have been removed or replaced with anonymous examples. Historical numerical results remain scoped evidence, not newly executed native checks. This applies to the current file tree; it does not erase previously published Git history.
+
+案例名称、本地来源路径、私人讨论链接、原始文件指纹及节点标识已泛化。保留的数值为有限范围的历史验证证据，不表示重新运行原生测试。本说明仅适用于当前文件树，不代表旧提交历史已清除。
