@@ -33,7 +33,7 @@ class LayoutIntelligenceTests(unittest.TestCase):
         self.assertEqual(x_from_producer_depth(2), 384)
 
     def test_rejects_real_project_depth_sign_regression(self):
-        # The Morphing builder used x = -192 * (source-to-consumer depth + 1).
+        # The Case A builder used x = -192 * (source-to-consumer depth + 1).
         old = {'const': (-192, 0), 'set': (-384, 0), 'seq': (-576, 0)}
         errors = validate_statement_layout(old, [('set', 'seq')],
                                            private_expression_edges=[('const', 'set')])

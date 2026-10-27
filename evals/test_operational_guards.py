@@ -210,7 +210,7 @@ class GuardsTests(unittest.TestCase):
 
     def test_manual_ksr_fixture_improves_height_without_removing_nodes(self):
         data=json.loads((ROOT/'evals/fixtures/ksr_positions.json').read_text(encoding='utf-8'))['functions']
-        old=data['V2_KerrSchildRadius_v1']['nodes'];new=data['V2_KerrSchildRadius_v1__Layout_optimization']['nodes']
+        old=data['layout_before']['nodes'];new=data['layout_after']['nodes']
         self.assertEqual(set(old),set(new));self.assertEqual(len(old),154)
         height=lambda d:max(p[1] for p in d.values())-min(p[1] for p in d.values())
         self.assertLess(height(new),height(old))

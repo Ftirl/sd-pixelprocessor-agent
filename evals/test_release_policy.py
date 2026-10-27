@@ -41,7 +41,7 @@ class ReleasePolicyTests(unittest.TestCase):
 
     def test_probe_has_no_fixed_destructive_output_cleanup(self):
         s = (ROOT/'scripts'/'probe_sd_semantics.py').read_text(encoding='utf-8')
-        self.assertNotIn(r'E:\\SD_AI\\_probe\\out', s)
+        self.assertNotIn(r'Z:\\example\\probe\\out', s)
         self.assertNotIn('scratches = [p for p in pkg_mgr.getUserPackages()', s)
         self.assertNotIn('PKG = scratches[0]', s)
         self.assertIn('PKG = pkg_mgr.newUserPackage()', s)
@@ -51,12 +51,12 @@ class ReleasePolicyTests(unittest.TestCase):
         skill = (ROOT/'SKILL.md').read_text(encoding='utf-8') + (ROOT/'references/EXECUTION_RULES.md').read_text(encoding='utf-8')
         spec = (ROOT/'references'/'SD_PixelProcessor_AGENT_SPEC_v2.5.0.md').read_text(encoding='utf-8')
         probe = (ROOT/'scripts'/'probe_sd_semantics.py').read_text(encoding='utf-8')
-        self.assertIn('MORPHING_RETEST_GATES.md', skill)
-        self.assertIn('MORPHING_RETEST_GATES.md', spec)
+        self.assertIn('CASE_A_RETEST_GATES.md', skill)
+        self.assertIn('CASE_A_RETEST_GATES.md', spec)
         self.assertIn("stem = g.getIdentifier() + '_output_'", probe)
         self.assertNotIn('and name in f', probe)
-        self.assertIn('SUN_SHOWER_RETEST_GATES.md', skill)
-        self.assertIn('SUN_SHOWER_RETEST_GATES.md', spec)
+        self.assertIn('CASE_B_RETEST_GATES.md', skill)
+        self.assertIn('CASE_B_RETEST_GATES.md', spec)
         self.assertIn('return graph.newNode(definition_id)', probe)
 
     def test_probe_library_lookup_is_package_scoped(self):

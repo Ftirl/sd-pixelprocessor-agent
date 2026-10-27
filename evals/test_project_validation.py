@@ -25,13 +25,13 @@ from project_validation import (
 
 
 class ProjectValidationTests(unittest.TestCase):
-    def test_morphing_dimension_and_order_fail_before_caller(self):
+    def test_case_a_dimension_and_order_fail_before_caller(self):
         writes = {('rot2', 'rx'): 1, ('rot2', 'ry'): 1}
         reads = [StateRead('rx', 2, 'rot2', True), StateRead('ry', 1, 'rot2', False)]
         self.assertEqual(check_state_reads(writes, reads), [
                          'DIMENSION_MISMATCH:rot2:rx:1->2', 'UNORDERED_READ:rot2:ry'])
 
-    def test_crate_get_vector_and_transform_gates(self):
+    def test_case_c_get_vector_and_transform_gates(self):
         graph = {'formals': {'p': 2}, 'sets': {}, 'gets': [
             {'name': 'p', 'dimension': 1, 'scope': 'formals'}]}
         self.assertEqual(check_get_dimensions(graph), ['GET_DIMENSION_MISMATCH:formals:p:2->1'])
@@ -46,7 +46,7 @@ class ProjectValidationTests(unittest.TestCase):
                                                {'outer.true'}),
                          ['UNCOVERED_SOURCE_PATH:outer.false'])
 
-    def test_crate_root_precision_and_oracle_provenance(self):
+    def test_case_c_root_precision_and_oracle_provenance(self):
         self.assertEqual(check_marked_root('function', 4, 1, designer_version='16.0.3',
                          root_definition_id='sbs::function::while'),
                          ['CONTROL_ROOT_CALLER_PROBE_REQUIRED:sbs::function::while'])
@@ -127,7 +127,7 @@ class ProjectValidationTests(unittest.TestCase):
                          ['FORMAL_SHADOWS_CARRIED_STATE:p'])
 
     def test_missing_package_does_not_become_new_scratch_package(self):
-        target = Path(tempfile.gettempdir()) / 'sun_shower_target.sbs'
+        target = Path(tempfile.gettempdir()) / 'case_b_target.sbs'
         self.assertEqual(exact_loaded_package_path(target, [target]), str(target))
         with self.assertRaises(ValueError):
             exact_loaded_package_path(target, [])
@@ -216,8 +216,8 @@ class ProjectValidationTests(unittest.TestCase):
         self.assertEqual(preflight_affine_probe([6.05], offset=.5, gain=.04), [])
 
     def test_package_selector_normalizes_windows_separators_and_unicode(self):
-        target = r'E:\SD_AI\Descente infinie\测试\Descente_infinie_PP.sbs'
-        loaded = [(2, 'e:/sd_ai/Descente infinie/测试/Descente_infinie_PP.sbs')]
+        target = r'Z:\example\case_d\测试\case_d_graph.sbs'
+        loaded = [(2, 'z:/example/case_d/测试/case_d_graph.sbs')]
         self.assertEqual(exact_loaded_package_index(target, loaded), 2)
         with self.assertRaisesRegex(ValueError, 'loaded='):
             exact_loaded_package_path(target, [])
