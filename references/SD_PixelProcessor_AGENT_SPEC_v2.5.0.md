@@ -3,6 +3,10 @@
 适用对象：执行分析、校验、创建、修复、结构化重构与节点布局任务的 agent。原生实测以 Substance Designer 16.0.3、sd_mcp_plugin 3.3.0 为主，不自动认证其它版本。真实项目新增的通过/失败边界见 `REAL_PROJECT_VALIDATION.md`、`MORPHING_RETEST_GATES.md`、`SUN_SHOWER_RETEST_GATES.md`、`CRATE_AT_DUSK_RETEST_GATES.md` 和 `DESCENTE_INFINIE_RETEST_GATES.md`；用户提供的项目记录是证据，不是本规范的操作授权。
 
 
+## 2026-10-27 操作加固修订
+
+运行时基线版本不变，行为修订见 `BEHAVIOR_REVISION`。`OPERATIONAL_RECOVERY.md` 是工程指纹、内容绑定的验证失效、临时组装、操作日志/恢复、性能与跨帧提交、发布回滚的现行工具契约。旧示例中的 verified 名称集合不能再用作正式放行；改用 EvidenceRegistry 及 current 身份映射，具体迁移示例见该文档。SOP-5B/DI1 的严格数学门仍有效，临时画面路径仍独立标记。
+
 ## 0. 执行契约
 
 ### 0.1 授权与任务范围
@@ -615,14 +619,14 @@ print('I2_NAME_SCREEN', dangling, 'UNVERIFIED_BUILTINS', unknown_builtin)
 2. **定函数边界与决策**：每个源码函数或语义区域给出 `FUNCTION_GRAPH` / `INLINE` / `BLOCKED`；循环体按 A10 作为候选；被调用 `>=2` 次、内部 `>=8` 有效计算节点或本身 `>=24` 节点的语义函数默认 `FUNCTION_GRAPH`。预计任何单图 `≥400` 时逐候选记录拆分前后投影；预计 `1200–1500` 时，若有安全且减量的候选，先函数化再进入高节点复核，保留则需 `STRUCTURAL_EXCEPTION`；`>1500` 先继续拆分或征求用户明确超预算批准。`BLOCKED` 必须写 `FUNCTIONIZATION_BLOCKED:<reason>`。
 3. **先定接口再建图**：按 A5 为每个函数定形参表与返回表。**所有跨边界数据必须是显式 Input**；调用方局部 Set、PP `#` 端口、父 comp 参数不得被函数内部偷读（I23）。在每张 Function Graph 的 IR 中断言形参名与 loop-carried Set/Get 状态名**无交集**（Sun shower 中 formal `p` 遮蔽 carried `p`）；不同名状态在 Init 中从形参初始化。循环体函数必须把每个被更新状态**同时列为形参（入）与返回（出）**（§7.9.11）。
 4. **先规划排布（仍不写 SD）**：函数边界与接口确定后，树形结构已经可知，因此按 L13/L16 为**每一张将要创建的图**生成纯数据布局计划：语句带与 Sequence 主干列、每个节点的角色/树深度/标称占位与**计划坐标**、While 与 Ifelse 子区域、网格原点。计划必须通过 L12/L14/L15 检查（零计划重叠、树方向、带完整性、归一化预算预估、计划中会出现的跨带边清单）。**计划未通过前不得创建任何节点。**
-5. **自底向上创建函数图并逐个验证（创建即落位）**：先建被调者、再建调用者。每个节点在创建时立即写入其计划坐标（L16/I39）。每个函数完成"形参 → 内部语句/表达式 → 返回节点（`getOutputNodes`）"后**立即回读并判 I1/I2/I9/I10/I23/I42/I43/I44，再用非退化输入对独立数值 oracle 逐函数测试**；函数根默认经真实纯算子桥接：裸 formal Get 与直接控制/结构节点 `while/sequence/set` 都不得只凭 `getOutputNodes()` 认作调用点可读，偏离须当前会话探针和首调用点数值验证。向量用例的分量须非对称且能暴露交换；分支用例从源码控制流生成，`if` 两支、各 return/三元分支与关键边界都登记到 `BRANCH_COVERAGE`，未覆盖不得全量 PASS。编码方式与解码容差须能分辨下游量化台阶（§7.11）；函数自身触发 A1 时递归执行 SOP-5A/A7。**函数图未通过自身数值检查前不得创建实例。**
+5. **自底向上创建函数图并逐个验证（创建即落位）**：先建被调者、再建调用者。每个节点在创建时立即写入其计划坐标（L16/I39）。每个函数完成"形参 → 内部语句/表达式 → 返回节点（`getOutputNodes`）"后**立即回读并判 I1/I2/I9/I10/I23/I42/I43/I44，再用非退化输入对独立数值 oracle 逐函数测试**；函数根默认经真实纯算子桥接：裸 formal Get 与直接控制/结构节点 `while/sequence/set` 都不得只凭 `getOutputNodes()` 认作调用点可读，偏离须当前会话探针和首调用点数值验证。向量用例的分量须非对称且能暴露交换；分支用例从源码控制流生成，`if` 两支、各 return/三元分支与关键边界都登记到 `BRANCH_COVERAGE`，未覆盖不得全量 PASS。编码方式与解码容差须能分辨下游量化台阶（§7.11）；函数自身触发 A1 时递归执行 SOP-5A/A7。**严格路径中，函数图未通过自身数值检查前不得创建实例。大型项目仅可按 `LARGE_PROJECT_ASSEMBLY.md` §4，经用户选择并登记具体范围后创建 `PROVISIONAL_VISUAL_ASSEMBLY` 临时实例；不改变原数值 FAIL/PENDING，不进入 verified 集合，不豁免结构、状态与运行安全。**
 6. **组装主图并回读实例接口（创建即落位）**：在目标 PP/复合图中先建骨架（输入通道、PP `#` 端口、输出节点），再为每个调用点创建 Function 实例，均写计划坐标；逐端口回读 id/类型/连接判 I11（不假设 `input1/input2`）；首个调用点按 I24 通过后才复制其它调用点。
 7. **在主图重建代码结构**：语句以 `Set` 落地并挂 `Sequence` 主干；生产 Set 接先执行 `In` 路径，下方带内 fresh typed `Get(name)` 的消费者接同一可达链的后执行 `Last` 路径（Get 本身无 Sequence 输入口）。先回读实际边/端口/输出可达性，再以非零变化用例验证名称、维度和作用域。不能等全部表达式建完才补 Sequence，却保留 Set→下方算子的 DAG 直连。Get 读值异常先修后分支连通性；拓扑正确仍异常才阻断或请求经数值验证的 Sequence-value 例外，不静默改变用户选定结构（§7.10/W15/N26）；循环按 §7.9.2 保持结构化 While，并按 **§7.9.10 模板 + §7.9.11 函数化规则**连线。标根后从输出沿真实边逆向遍历，IR 必需的 pre-loop Set/Sequence 与 While 必须全在可达闭包内；同名 Get 本身不形成 Set→Get 实边。PP 根维度与标记数量按 `MORPHING_RETEST_GATES.md` P0 回读。
 8. **几何校正与收尾**：回读真实坐标、真实占用及各图节点数，比较 `ARCH_PLAN` 的调用方/新函数投影并解释偏差；对每张图重新执行 A1/SOP-5A 与 §7.10.5，高节点图还需响应/回读、cook、布局证据。按 SOP-8 第 6 步做**仅位置**的几何校正（整子树/整语句带平移、重新吸附、重新查碰撞）；按 §7.10.4–§7.10.6 判 I37/I38；生成 Final IR；按 SOP-9 验证与保存。报告须包含函数表、section/branch 覆盖表、`ARCH_PLAN`、布局计划与计划-实际偏差/校正轮次（I39）、实例与调用点清单、循环台账、归一化指标与未验证项。未能完成全量移植时，以可独立 oracle 验证的最大子集交付，并明确未移植层/预期图像差异，不能称全量一致。
 
 **与 A8 的分工**：A8 的"原图快照 → 候选 IR → 新建函数 → 首个实例 → 回读端口 → 语义验证 → 其它调用点 → **删除被替代节点**"是**既有图替换**顺序；新建/移植任务没有"被替代节点"，因此走本 SOP 的"先函数化 → 再组装"，且不得遗留未接线的孤岛节点（I1/I2/I28）。
 
-**SOP-5B 阶段锁（DI1）**：第 5 步不是事后补测项。每个函数执行 `create → readback → (已授权时保存/快照) → native cook → independent oracle compare → gate PASS`，再调用 `require_verified_dependencies(caller, deps, verified)`，通过后才允许第 6–7 步创建该函数的调用方/主 PP 实例。同一次 MCP 脚本可包含多个阶段，但必须在脚本内逐函数检查并在 FAIL 时立即停止，不能先构完 5 函数与主图再补单元测试。记录 `source_hash`、输入、来源路径/分支、原生值、独立 oracle、编码逆变换与容差；`check_function_numeric_gate` 检查单函数证据，`check_build_stage_order` 审计事件顺序。用非对称 vec2 故意交换分量作测试夹具负例；若错误未被拦住，不可将该单元 harness 用作放行门。一组非零输入只算 smoke test，未覆盖分支/边界须单列未验证。详见 `DESCENTE_INFINIE_RETEST_GATES.md` DI1。
+**SOP-5B 阶段锁（DI1）**：以下是严格验证路径，第 5 步不是事后补测项。`LARGE_PROJECT_ASSEMBLY.md` §4 是唯一在本修订中引入的显式临时画面路径：它不宣称满足本阶段锁，也不能伪造门禁通过；用户已选优先画面时按其授权范围推进并单列未验证项。每个函数执行 `create → readback → (已授权时保存/快照) → native cook → independent oracle compare → gate PASS`，再调用 `require_verified_dependencies(caller, deps, registry, current=current)`，通过后才允许第 6–7 步创建该函数的调用方/主 PP 实例。同一次 MCP 脚本可包含多个阶段，但必须在脚本内逐函数检查并在 FAIL 时立即停止，不能先构完 5 函数与主图再补单元测试。记录 `source_hash`、输入、来源路径/分支、原生值、独立 oracle、编码逆变换与容差；`check_function_numeric_gate` 检查单函数证据，`check_build_stage_order` 审计事件顺序。用非对称 vec2 故意交换分量作测试夹具负例；若错误未被拦住，不可将该单元 harness 用作放行门。一组非零输入只算 smoke test，未覆盖分支/边界须单列未验证。详见 `DESCENTE_INFINIE_RETEST_GATES.md` DI1。
 
 ### SOP-6：已授权创建/修复
 

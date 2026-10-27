@@ -6,7 +6,7 @@ These checks turn production safety assumptions into executable release gates. R
 
 `probe_sd_semantics.py` creates a **fresh** `newUserPackage()` owned by the current probe run. It no longer searches for, reuses, clears, or deletes arbitrary unsaved packages. Cleanup iterates only graph objects explicitly registered by this probe run.
 
-`SAFETY_INVARIANT_001`: the graph fingerprint of every pre-existing user package is captured before the probe and compared again during cleanup. Any detected change fails the probe.
+`SAFETY_INVARIANT_001`: the graph fingerprint of every pre-existing user package is captured before the probe and compared again during cleanup. The current implementation uses graph_evidence semantic snapshots of supported resource types, including nodes/properties/edges/roots/nested graphs. Unsupported readback fails before mutation; it never substitutes graph names or an empty snapshot. Coordinates and render-cache icons are excluded and require separate checks. External referenced file contents require a separately recorded dependency closure.
 
 ## P2 — Output isolation
 
@@ -41,3 +41,7 @@ A release is publishable only when this suite reports `RELEASE EVAL: PASS`.
 ## Runtime semantic checks
 
 Release acceptance includes a pure-Python runtime-semantic policy layer and behavioral evals for normalized PP coordinates, Set→Sequence value transport, conservative pure terminal roots, `SAFETY_INVARIANT_002`, and the Sequence-vector `mul` broadcast rule. Known main-thread-hang topology is statically rejected rather than probed automatically. These static checks are not a substitute for the real-project numeric oracle.
+
+## Operational revision 2026-10-27
+
+See OPERATIONAL_RECOVERY.md and BEHAVIOR_REVISION. Release tests additionally exercise content-bound evidence invalidation, journals and writer leases, visual-decision scope, transport contracts, manual layout and archived native FTP fixtures, frame commit rules, and transactional installer fault injection. Archived data and pure-Python tests do not establish new native runtime measurements.
