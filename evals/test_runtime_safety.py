@@ -72,11 +72,11 @@ class RuntimeSafetyTests(unittest.TestCase):
     def test_preexisting_package_change_is_detected(self):
         pkg = FakeMutablePackage('/work/user.sbs', [FakeGraph('A')])
         mgr = FakePackageManager([pkg])
-        before = rs.snapshot_user_packages(mgr)
-        rs.assert_preexisting_packages_unchanged(before, mgr)
+        before = rs.snapshot_user_packages(mgr, lambda g: {'id': g.getIdentifier(), 'nodes': g.getNodes()})
+        rs.assert_preexisting_packages_unchanged(before, mgr, graph_reader=lambda g: {'id': g.getIdentifier(), 'nodes': g.getNodes()})
         pkg.graphs.append(FakeGraph('B'))
         with self.assertRaises(RuntimeError):
-            rs.assert_preexisting_packages_unchanged(before, mgr)
+            rs.assert_preexisting_packages_unchanged(before, mgr, graph_reader=lambda g: {'id': g.getIdentifier(), 'nodes': g.getNodes()})
 
 
 if __name__ == '__main__':

@@ -48,7 +48,7 @@ class ReleasePolicyTests(unittest.TestCase):
         self.assertIn('SAFETY_INVARIANT_001', s)
 
     def test_retest_gates_are_routed_and_exports_match_exact_graph_prefix(self):
-        skill = (ROOT/'SKILL.md').read_text(encoding='utf-8')
+        skill = (ROOT/'SKILL.md').read_text(encoding='utf-8') + (ROOT/'references/EXECUTION_RULES.md').read_text(encoding='utf-8')
         spec = (ROOT/'references'/'SD_PixelProcessor_AGENT_SPEC_v2.5.0.md').read_text(encoding='utf-8')
         probe = (ROOT/'scripts'/'probe_sd_semantics.py').read_text(encoding='utf-8')
         self.assertIn('MORPHING_RETEST_GATES.md', skill)
@@ -127,7 +127,7 @@ class ReleasePolicyTests(unittest.TestCase):
         self.assertEqual(functions['length_vec2']['declared_output_type'], 'float1')
 
     def test_field_evidence_guards_are_preserved(self):
-        skill = (ROOT/'SKILL.md').read_text(encoding='utf-8')
+        skill = (ROOT/'SKILL.md').read_text(encoding='utf-8') + (ROOT/'references/EXECUTION_RULES.md').read_text(encoding='utf-8')
         self.assertIn('A Get takes the variable identifier, never a node alias', skill)
         self.assertIn('Do not use the deep tail of a long nested-`ifelse` mux', skill)
         self.assertIn('operator- and operand-order-dependent', skill)

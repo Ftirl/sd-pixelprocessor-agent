@@ -181,7 +181,7 @@ class ProjectValidationTests(unittest.TestCase):
                        'native': [0.2, 0.7], 'oracle': [0.2, 0.7],
                        'tolerance': 0.01, 'oracle_independent': True}]}
         self.assertEqual(check_function_numeric_gate(record, {'base'}), [])
-        with self.assertRaisesRegex(ValueError, 'CALLER_BEFORE_FUNCTION_GATE'):
+        with self.assertRaisesRegex(ValueError, 'CONTENT_BOUND_EVIDENCE_REQUIRED'):
             require_verified_dependencies('main', ['cameraRay'], [])
         events = [{'kind': 'caller_start', 'caller': 'main', 'requires': ['cameraRay']},
                   {'kind': 'function_gate_pass', 'function': 'cameraRay'}]
