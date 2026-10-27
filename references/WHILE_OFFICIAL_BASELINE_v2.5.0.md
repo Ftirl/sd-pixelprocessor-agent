@@ -1,6 +1,6 @@
 # While / Set / Get 官方语义基线
 
-更新时间：2026-09-22。
+更新时间：[historical validation]。
 用途：为 `sd-pixelprocessor-agent` 提供 While、Set/Get/Sequence、循环格式降级、While 连接规划和 Pixel Processor 的官方语义基线。项目实测若与本文件冲突，先视为当前结构/环境异常，不直接覆盖官方已明确行为。
 
 ## 1. Adobe 官方已明确
@@ -137,7 +137,7 @@ Accretion 首次实跑曾出现“While 携带逐像素状态失败”的最小�
 
 该结果只保留为 16.0.3 特定实验的历史异常。未来任务只有在遵守官方规则后仍发生异常时，才运行最小能力探针。
 
-同样，历史上的“`$size` 在 While 内为 0”和“嵌套 While 必然返回 0”已撤回，不能复用。`Morphing Abstract_text1` 的 16.0.3 回测还测到内层 Body 更新外层携带状态后，两轮外层迭代的编码结果约为 22（预期 22）；这是该图的正例，不代表任意跨作用域 Get/Set 都可靠。详见 `MORPHING_RETEST_GATES.md` P2。
+同样，历史上的“`$size` 在 While 内为 0”和“嵌套 While 必然返回 0”已撤回，不能复用。`Case A rebuild` 的 16.0.3 回测还测到内层 Body 更新外层携带状态后，两轮外层迭代的编码结果约为 22（预期 22）；这是该图的正例，不代表任意跨作用域 Get/Set 都可靠。详见 `CASE_A_RETEST_GATES.md` P2。
 
 ## 5. 参考资料
 

@@ -9,7 +9,7 @@
 
 ## 1. 方法与可信度
 
-历史 22 项基线的流程（由当时版本的 `scripts/probe_sd_semantics.py` 一次执行，2026-09-22）：
+历史 22 项基线的流程（由当时版本的 `scripts/probe_sd_semantics.py` 一次执行，[historical validation]）：
 
 1. 新建**本次运行独占的未保存临时包**；不复用/清空任何已有未保存包，并在结束时只删除本次登记的探针图；
 2. 每项探针独立合成图：`Pixel Processor` → `sbs::compositing::output` → 标记为 graph output；
@@ -59,7 +59,7 @@
 
 结论：
 1. **连线成功 ≠ 类型正确**；`newPropertyConnectionFromId` 不会因维度不符抛错。
-2. 本表列出的 `mul`/`mulscalar` 混维样本结果为**静默 0**；这不是可推广到所有算子的统一语义。rain_text 的 16.0.3 实测显示混维 `add`/`sub`/`pow` 还能产生部分或恒等式外观，且结果形状跟随输入 `a`。因此无论结果是 0 还是看似合理，都必须靠 §7.5.1 的维度判定流程在创建前解决（I40）。
+2. 本表列出的 `mul`/`mulscalar` 混维样本结果为**静默 0**；这不是可推广到所有算子的统一语义。Case E 的 16.0.3 实测显示混维 `add`/`sub`/`pow` 还能产生部分或恒等式外观，且结果形状跟随输入 `a`。因此无论结果是 0 还是看似合理，都必须靠 §7.5.1 的维度判定流程在创建前解决（I40）。
 3. `mul` 接受同维（含向量×向量，逐分量）；float1×float1 走 `mul`；向量×标量只能 `mulscalar`(《Vector》=向量端，《Scale》=标量端)。
 
 ## 4. 库函数语义（`resources/packages/functions.sbs`）—— 实测
@@ -108,7 +108,7 @@ While 节点输入 id（实测）：`init`(Init) / `cond`(Exit cond.) / `loop`(L
 |---|---|
 | 新建 PP **没有**内部图 | `pp.getReferencedResource()` 返回 None；须 `pp.newPropertyGraph(pp.getPropertyFromId('perpixel', Input), 'SDSBSFunctionGraph')` |
 | PP 的 `perpixel` 属性 | label `Per pixel function`，类型 float4，`isFunctionOnly=True`；内部图就是它的 property graph |
-| 图输出**不是节点类型** | 用 `setOutputNode(node, True)` 标记任意普通节点；语料实测输出节点是 `pow`、`vector4`、`instance` 等；`getOutputNodes()` 才是权威判据（`loop whlie.sbs` 的 PP 内部图 `getOutputNodes()==0` → 未标记输出，非"缺少 output 节点"） |
+| 图输出**不是节点类型** | 用 `setOutputNode(node, True)` 标记任意普通节点；语料实测输出节点是 `pow`、`vector4`、`instance` 等；`getOutputNodes()` 才是权威判据（`loop_example.sbs` 的 PP 内部图 `getOutputNodes()==0` → 未标记输出，非"缺少 output 节点"） |
 | 合成图输出节点 | 定义 `sbs::compositing::output`，输入 id `inputNodeOutput`；`graph.setOutputNode(node, True)` |
 | **原生数值验证通路** | `graph.compute()` + `sd.tools.export.exportSDGraphOutputs(graph, dir, 'bmp')` → 24bit **线性** BMP；可在进程内完成"真实 cook 的数值验证"，无需保存工程、无需外部渲染器 |
 | 插件能力边界 | `sd_mcp_plugin` 不实现 `newPropertyGraph`，因此**无法**通过 MCP 工具新建 PP 内部图；需要 SDK（`execute_sd_code`）补足 |

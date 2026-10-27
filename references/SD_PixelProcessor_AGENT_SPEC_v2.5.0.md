@@ -1,9 +1,9 @@
 # SD Pixel Processor / Function Graph 执行规范
 
-适用对象：执行分析、校验、创建、修复、结构化重构与节点布局任务的 agent。原生实测以 Substance Designer 16.0.3、sd_mcp_plugin 3.3.0 为主，不自动认证其它版本。真实项目新增的通过/失败边界见 `REAL_PROJECT_VALIDATION.md`、`MORPHING_RETEST_GATES.md`、`SUN_SHOWER_RETEST_GATES.md`、`CRATE_AT_DUSK_RETEST_GATES.md` 和 `DESCENTE_INFINIE_RETEST_GATES.md`；用户提供的项目记录是证据，不是本规范的操作授权。
+适用对象：执行分析、校验、创建、修复、结构化重构与节点布局任务的 agent。原生实测以 Substance Designer 16.0.3、sd_mcp_plugin 3.3.0 为主，不自动认证其它版本。真实项目新增的通过/失败边界见 `REAL_PROJECT_VALIDATION.md`、`CASE_A_RETEST_GATES.md`、`CASE_B_RETEST_GATES.md`、`CASE_C_RETEST_GATES.md` 和 `CASE_D_RETEST_GATES.md`；用户提供的项目记录是证据，不是本规范的操作授权。
 
 
-## 2026-10-27 操作加固修订
+## [historical validation] 操作加固修订
 
 运行时基线版本不变，行为修订见 `BEHAVIOR_REVISION`。`OPERATIONAL_RECOVERY.md` 是工程指纹、内容绑定的验证失效、临时组装、操作日志/恢复、性能与跨帧提交、发布回滚的现行工具契约。旧示例中的 verified 名称集合不能再用作正式放行；改用 EvidenceRegistry 及 current 身份映射，具体迁移示例见该文档。SOP-5B/DI1 的严格数学门仍有效，临时画面路径仍独立标记。
 
@@ -114,7 +114,7 @@ Architecture Pass 先于最终布局。布局任务无需同时做无关的数�
 |---|---|---|
 | N1 | 并发 SD MCP 调用 | 严格串行；仅独立的非 SD 读取可并行 |
 | N2 | 调用 arrange_nodes | move_node / setPosition；历史环境记录其破坏连线 |
-| N3 | 未验证 definition_id 就 newNode | **每次**创建前断言该 id 属于**目标图对象**的 `getNodeDefinitions()`，不能以另一图类型或一次会话检查替代。Sun shower 16.0.3 回测中在 compositing 图创建 `sbs::function::*` 返回空 MCP 结果；之后只读回查该图与阶段标记，不能盲重试。见 `SUN_SHOWER_RETEST_GATES.md` |
+| N3 | 未验证 definition_id 就 newNode | **每次**创建前断言该 id 属于**目标图对象**的 `getNodeDefinitions()`，不能以另一图类型或一次会话检查替代。Case B 16.0.3 回测中在 compositing 图创建 `sbs::function::*` 返回空 MCP 结果；之后只读回查该图与阶段标记，不能盲重试。见 `CASE_B_RETEST_GATES.md` |
 | N4 | 假设实例输出固定为 unique_filter_output | 查 getProperties(Output)；多输出必须明确选端口 |
 | N5 | 未经用户授权改图、删资源、写工程 | 按 §0.1 确定权限；已有授权不重复索取 |
 | N6 | 用 graph_identifier 猜重名图或函数图 | 精确包路径、资源/图身份、PP id |
@@ -233,7 +233,7 @@ I32–I36 检查的是**循环降级、连接规划与模板一致性**，不是
 
 **结构比指标**：`nodes_per_statement = 节点数 / 语句带数`（语句带数=Set/语句根数，至少 1）、`Y_per_statement = spanY / 语句带数`、`X_per_level = spanX / 最大表达式深度`。它们比绝对节点数/绝对跨度更能反映可维护性，定义与阈值见 §7.10.4–§7.10.5，实测基线见 §11.7。
 
-**数值来源**：A1 的节点数与归一化跨度数字取自 16.0.3 只读实测参考包 `OKColor_LCH.sbs`（1 张复合图 + 15 张 Function Graph、1058 节点、最大单图 368 节点/43 语句带、`nodes_per_statement` 典型 5.8–13.5、`Y_per_statement` 中位 230/p75 318、`X_per_level` 中位 ≈150、行步中位 224、列步中位 160）。该包属于可接受的语句树形态，故**绝对高度墙被归一化判据取代**。
+**数值来源**：A1 的节点数与归一化跨度数字取自 16.0.3 只读实测参考包 `color_example.sbs`（1 张复合图 + 15 张 Function Graph、1058 节点、最大单图 368 节点/43 语句带、`nodes_per_statement` 典型 5.8–13.5、`Y_per_statement` 中位 230/p75 318、`X_per_level` 中位 ≈150、行步中位 224、列步中位 160）。该包属于可接受的语句树形态，故**绝对高度墙被归一化判据取代**。
 
 **阈值制动**：小片段不得被过度函数化。重复区域 `<6` 个有效计算节点通常不抽；重复区域 `>=8` 默认进入候选；单次语义区域通常 `>=24–32` 节点才进入抽取候选。明确的基础数学 primitive、已有源码函数边界或用户指定接口可例外。`nodes_per_statement > 16` 通常意味着语句结构被展开成 DAG：优先补 Set/Sequence/Get 结构（§7.10）或抽取，而不是继续堆节点。
 
@@ -617,16 +617,16 @@ print('I2_NAME_SCREEN', dangling, 'UNVERIFIED_BUILTINS', unknown_builtin)
 
 1. **只写计划**：按 SOP-2 建立源码 IR 与目标 IR，并按 L1 取得/记录用户的 A/B 图结构选择；除函数表，还要列出源码每个语义**section 和顶层 branch**，逐项标 `PORTED`/`OMITTED`/`BLOCKED`，并标出计算因子最终应被谁消费；按 SOP-3A 建循环台账；按 A9/§7.7 建**源码函数表**（函数名、参数、返回、调用关系、是否纯函数、读取的外部状态、循环/分支、副作用）；按 SOP-5A 第 5 步生成 `ARCH_PLAN`。同时生成 `BUILTIN_AVAILABILITY`、I42 向量槽位、I44 变换应用点、I16 广播降级、`BRANCH_COVERAGE`（源码路径→判别用例 id）、以及时间双通道来源/选择表（适用时）。重复调用的 helper 在写图前估算 `calls × helper_nodes + glue`，再对抽取方案估算调用方替换量与新函数自身节点数，分别执行 A1 预算；此阶段**不创建任何节点**。
 2. **定函数边界与决策**：每个源码函数或语义区域给出 `FUNCTION_GRAPH` / `INLINE` / `BLOCKED`；循环体按 A10 作为候选；被调用 `>=2` 次、内部 `>=8` 有效计算节点或本身 `>=24` 节点的语义函数默认 `FUNCTION_GRAPH`。预计任何单图 `≥400` 时逐候选记录拆分前后投影；预计 `1200–1500` 时，若有安全且减量的候选，先函数化再进入高节点复核，保留则需 `STRUCTURAL_EXCEPTION`；`>1500` 先继续拆分或征求用户明确超预算批准。`BLOCKED` 必须写 `FUNCTIONIZATION_BLOCKED:<reason>`。
-3. **先定接口再建图**：按 A5 为每个函数定形参表与返回表。**所有跨边界数据必须是显式 Input**；调用方局部 Set、PP `#` 端口、父 comp 参数不得被函数内部偷读（I23）。在每张 Function Graph 的 IR 中断言形参名与 loop-carried Set/Get 状态名**无交集**（Sun shower 中 formal `p` 遮蔽 carried `p`）；不同名状态在 Init 中从形参初始化。循环体函数必须把每个被更新状态**同时列为形参（入）与返回（出）**（§7.9.11）。
+3. **先定接口再建图**：按 A5 为每个函数定形参表与返回表。**所有跨边界数据必须是显式 Input**；调用方局部 Set、PP `#` 端口、父 comp 参数不得被函数内部偷读（I23）。在每张 Function Graph 的 IR 中断言形参名与 loop-carried Set/Get 状态名**无交集**（Case B 中 formal `p` 遮蔽 carried `p`）；不同名状态在 Init 中从形参初始化。循环体函数必须把每个被更新状态**同时列为形参（入）与返回（出）**（§7.9.11）。
 4. **先规划排布（仍不写 SD）**：函数边界与接口确定后，树形结构已经可知，因此按 L13/L16 为**每一张将要创建的图**生成纯数据布局计划：语句带与 Sequence 主干列、每个节点的角色/树深度/标称占位与**计划坐标**、While 与 Ifelse 子区域、网格原点。计划必须通过 L12/L14/L15 检查（零计划重叠、树方向、带完整性、归一化预算预估、计划中会出现的跨带边清单）。**计划未通过前不得创建任何节点。**
 5. **自底向上创建函数图并逐个验证（创建即落位）**：先建被调者、再建调用者。每个节点在创建时立即写入其计划坐标（L16/I39）。每个函数完成"形参 → 内部语句/表达式 → 返回节点（`getOutputNodes`）"后**立即回读并判 I1/I2/I9/I10/I23/I42/I43/I44，再用非退化输入对独立数值 oracle 逐函数测试**；函数根默认经真实纯算子桥接：裸 formal Get 与直接控制/结构节点 `while/sequence/set` 都不得只凭 `getOutputNodes()` 认作调用点可读，偏离须当前会话探针和首调用点数值验证。向量用例的分量须非对称且能暴露交换；分支用例从源码控制流生成，`if` 两支、各 return/三元分支与关键边界都登记到 `BRANCH_COVERAGE`，未覆盖不得全量 PASS。编码方式与解码容差须能分辨下游量化台阶（§7.11）；函数自身触发 A1 时递归执行 SOP-5A/A7。**严格路径中，函数图未通过自身数值检查前不得创建实例。大型项目仅可按 `LARGE_PROJECT_ASSEMBLY.md` §4，经用户选择并登记具体范围后创建 `PROVISIONAL_VISUAL_ASSEMBLY` 临时实例；不改变原数值 FAIL/PENDING，不进入 verified 集合，不豁免结构、状态与运行安全。**
 6. **组装主图并回读实例接口（创建即落位）**：在目标 PP/复合图中先建骨架（输入通道、PP `#` 端口、输出节点），再为每个调用点创建 Function 实例，均写计划坐标；逐端口回读 id/类型/连接判 I11（不假设 `input1/input2`）；首个调用点按 I24 通过后才复制其它调用点。
-7. **在主图重建代码结构**：语句以 `Set` 落地并挂 `Sequence` 主干；生产 Set 接先执行 `In` 路径，下方带内 fresh typed `Get(name)` 的消费者接同一可达链的后执行 `Last` 路径（Get 本身无 Sequence 输入口）。先回读实际边/端口/输出可达性，再以非零变化用例验证名称、维度和作用域。不能等全部表达式建完才补 Sequence，却保留 Set→下方算子的 DAG 直连。Get 读值异常先修后分支连通性；拓扑正确仍异常才阻断或请求经数值验证的 Sequence-value 例外，不静默改变用户选定结构（§7.10/W15/N26）；循环按 §7.9.2 保持结构化 While，并按 **§7.9.10 模板 + §7.9.11 函数化规则**连线。标根后从输出沿真实边逆向遍历，IR 必需的 pre-loop Set/Sequence 与 While 必须全在可达闭包内；同名 Get 本身不形成 Set→Get 实边。PP 根维度与标记数量按 `MORPHING_RETEST_GATES.md` P0 回读。
+7. **在主图重建代码结构**：语句以 `Set` 落地并挂 `Sequence` 主干；生产 Set 接先执行 `In` 路径，下方带内 fresh typed `Get(name)` 的消费者接同一可达链的后执行 `Last` 路径（Get 本身无 Sequence 输入口）。先回读实际边/端口/输出可达性，再以非零变化用例验证名称、维度和作用域。不能等全部表达式建完才补 Sequence，却保留 Set→下方算子的 DAG 直连。Get 读值异常先修后分支连通性；拓扑正确仍异常才阻断或请求经数值验证的 Sequence-value 例外，不静默改变用户选定结构（§7.10/W15/N26）；循环按 §7.9.2 保持结构化 While，并按 **§7.9.10 模板 + §7.9.11 函数化规则**连线。标根后从输出沿真实边逆向遍历，IR 必需的 pre-loop Set/Sequence 与 While 必须全在可达闭包内；同名 Get 本身不形成 Set→Get 实边。PP 根维度与标记数量按 `CASE_A_RETEST_GATES.md` P0 回读。
 8. **几何校正与收尾**：回读真实坐标、真实占用及各图节点数，比较 `ARCH_PLAN` 的调用方/新函数投影并解释偏差；对每张图重新执行 A1/SOP-5A 与 §7.10.5，高节点图还需响应/回读、cook、布局证据。按 SOP-8 第 6 步做**仅位置**的几何校正（整子树/整语句带平移、重新吸附、重新查碰撞）；按 §7.10.4–§7.10.6 判 I37/I38；生成 Final IR；按 SOP-9 验证与保存。报告须包含函数表、section/branch 覆盖表、`ARCH_PLAN`、布局计划与计划-实际偏差/校正轮次（I39）、实例与调用点清单、循环台账、归一化指标与未验证项。未能完成全量移植时，以可独立 oracle 验证的最大子集交付，并明确未移植层/预期图像差异，不能称全量一致。
 
 **与 A8 的分工**：A8 的"原图快照 → 候选 IR → 新建函数 → 首个实例 → 回读端口 → 语义验证 → 其它调用点 → **删除被替代节点**"是**既有图替换**顺序；新建/移植任务没有"被替代节点"，因此走本 SOP 的"先函数化 → 再组装"，且不得遗留未接线的孤岛节点（I1/I2/I28）。
 
-**SOP-5B 阶段锁（DI1）**：以下是严格验证路径，第 5 步不是事后补测项。`LARGE_PROJECT_ASSEMBLY.md` §4 是唯一在本修订中引入的显式临时画面路径：它不宣称满足本阶段锁，也不能伪造门禁通过；用户已选优先画面时按其授权范围推进并单列未验证项。每个函数执行 `create → readback → (已授权时保存/快照) → native cook → independent oracle compare → gate PASS`，再调用 `require_verified_dependencies(caller, deps, registry, current=current)`，通过后才允许第 6–7 步创建该函数的调用方/主 PP 实例。同一次 MCP 脚本可包含多个阶段，但必须在脚本内逐函数检查并在 FAIL 时立即停止，不能先构完 5 函数与主图再补单元测试。记录 `source_hash`、输入、来源路径/分支、原生值、独立 oracle、编码逆变换与容差；`check_function_numeric_gate` 检查单函数证据，`check_build_stage_order` 审计事件顺序。用非对称 vec2 故意交换分量作测试夹具负例；若错误未被拦住，不可将该单元 harness 用作放行门。一组非零输入只算 smoke test，未覆盖分支/边界须单列未验证。详见 `DESCENTE_INFINIE_RETEST_GATES.md` DI1。
+**SOP-5B 阶段锁（DI1）**：以下是严格验证路径，第 5 步不是事后补测项。`LARGE_PROJECT_ASSEMBLY.md` §4 是唯一在本修订中引入的显式临时画面路径：它不宣称满足本阶段锁，也不能伪造门禁通过；用户已选优先画面时按其授权范围推进并单列未验证项。每个函数执行 `create → readback → (已授权时保存/快照) → native cook → independent oracle compare → gate PASS`，再调用 `require_verified_dependencies(caller, deps, registry, current=current)`，通过后才允许第 6–7 步创建该函数的调用方/主 PP 实例。同一次 MCP 脚本可包含多个阶段，但必须在脚本内逐函数检查并在 FAIL 时立即停止，不能先构完 5 函数与主图再补单元测试。记录 `source_hash`、输入、来源路径/分支、原生值、独立 oracle、编码逆变换与容差；`check_function_numeric_gate` 检查单函数证据，`check_build_stage_order` 审计事件顺序。用非对称 vec2 故意交换分量作测试夹具负例；若错误未被拦住，不可将该单元 harness 用作放行门。一组非零输入只算 smoke test，未覆盖分支/边界须单列未验证。详见 `CASE_D_RETEST_GATES.md` DI1。
 
 ### SOP-6：已授权创建/修复
 
@@ -687,7 +687,7 @@ fg.newProperty('p', SDTypeFloat2.sNew(), C.Input)
 # fg.setOutputNode(body, True)
 ```
 
-**16.0.3 SDK 值/资源 API 回测（`SUN_SHOWER_RETEST_GATES.md`）**：`SDProperty` 本身没有 `setValue`；不要调用 `node.getPropertyFromId(...).setValue(...)`。输入值走 `node.getInputPropertyValueFromId(id)` / `node.setInputPropertyValueFromId(id, SDValueX.sNew(value))`；继承模式走 `graph.getPropertyInheritanceMethod(prop)` / `graph.setPropertyInheritanceMethod(prop, SDPropertyInheritanceMethod.Absolute)`。向量值先构造基类型，再作为**单个**实参传入：`SDValueFloat4.sNew(float4(r,g,b,a))`、`SDValueInt2.sNew(int2(log2w,log2h))`；`$outputsize=(5,5)` 在该回测得 32×32。资源用 `SDSBSCompGraph.sNew(pkg)` / `SDSBSFunctionGraph.sNew(pkg)`；本回测 `SDPackage.newResource` 不存在。代码经 `execute_sd_code` 调用时显式调用入口函数，不依赖 `__main__` 守卫；记录当前源码哈希并只刷新本次拥有的模块。具体 SDK 仍以当前版本能力回读为准。
+**16.0.3 SDK 值/资源 API 回测（`CASE_B_RETEST_GATES.md`）**：`SDProperty` 本身没有 `setValue`；不要调用 `node.getPropertyFromId(...).setValue(...)`。输入值走 `node.getInputPropertyValueFromId(id)` / `node.setInputPropertyValueFromId(id, SDValueX.sNew(value))`；继承模式走 `graph.getPropertyInheritanceMethod(prop)` / `graph.setPropertyInheritanceMethod(prop, SDPropertyInheritanceMethod.Absolute)`。向量值先构造基类型，再作为**单个**实参传入：`SDValueFloat4.sNew(float4(r,g,b,a))`、`SDValueInt2.sNew(int2(log2w,log2h))`；`$outputsize=(5,5)` 在该回测得 32×32。资源用 `SDSBSCompGraph.sNew(pkg)` / `SDSBSFunctionGraph.sNew(pkg)`；本回测 `SDPackage.newResource` 不存在。代码经 `execute_sd_code` 调用时显式调用入口函数，不依赖 `__main__` 守卫；记录当前源码哈希并只刷新本次拥有的模块。具体 SDK 仍以当前版本能力回读为准。
 
 新未保存包路径为空，不能通过“第一个空路径包”定位。使用本次创建取得的确切包对象；有保存授权时先保存到目标路径，再分阶段创建资源。
 已保存目标包若在后续调用中找不到，先按规范化绝对路径重新获取/显式加载并核实资源数，绝不回退到新建空包；路径选择器报 `Package not found` 也须先列出已加载包的规范化候选。`exact_loaded_package_path` 可校验斜杠/反斜杠与大小写；若 SDK/MCP 路径查找仍失败，刷新 scene info 后用 `exact_loaded_package_index` 匹配**当前**报告的索引或直接使用已验证包对象，紧接保存前再次核实路径与图身份。不得硬编码历史索引或把该症状解释为包已卸载（DI7）。每轮原生数值判定前重跑已知常量活性 cook。导出按创建后读回的实际 graph identifier 和扩展名选文件，自动 `_1` 等后缀不等于请求名；清理只限本次运行确认为自有的临时对象。
@@ -799,8 +799,8 @@ def same_row(a_position, b_position, tolerance=2.0):
 | T41 | `mul` 输入 id 为 `a`/`b`（标签 A/B），`mulscalar` 输入 id 为 `a`/`scalar`（标签 **Vector**/**Scale**，顺序不可交换）；官方描述为 "multiplies each component of the input **Vector** by the same scalar value **Scale**"，且 `a` 仅接受 float2/3/4；`mul` 官方为 "two **same type** values" 并接受同维向量；用 `getPropertyFromId` 查询 `A`、`B`、`Vector`、`Scale` 均返回 None | 连线/设参只用小写 id；向量×标量必须向量接 `a`、标量接 `scalar`；float1×float1 与同维向量用 `mul`、不同维先修 IR（§7.5.1/I40/N20；官方原文见 `references/SD_BUILTIN_FUNCTIONS_v2.5.0.md`） |
 | T42 | SD **原子层只有 `atan2`、没有单参 `atan`**；`atan2` 输入 id `a`（标签 **Vector**，float2），输出弧度；官方语义为"输入向量与水平方向的夹角，**不需要像通常 atan2 那样交换 x/y**"。`cartesian` 输入 id **`rho`（标签 Length）/ `theta`（标签 Angle）**，输出 float2，官方公式 `Length × Float2(cos(Angle), sin(Angle))`。`vector2` 输入 id `componentsin`/`componentslast`（标签 `In`/`Last`），2 分量时 `componentsin`=水平 x、`componentslast`=垂直 y。旧规范"源码 `atan(x,y)` 需输入 `yx`"的指导**已作废**（会造成角度镜像） | 按 §7.5.2 映射表接线；`vector2` 组装 (水平, 垂直)；`atan(t)` 用 `atan2(vector2(1, t))`；`cartesian` 直接按 Length/Angle 接线（自带文档已给出端口，无需探针） |
 | T43 | 数值语义在两个来源里，且原子层**没有** `round`/`frac`/`trunc`/`sign`/`clamp`/`saturate`/`step`/`smoothstep`（85 个原子定义全表核实为 0 命中）：这些只存在于内建库 Functions（`functions.sbs`，171 个函数图）。官方语义：`round_float1` = "Rounds up when decimal is **greater or equal than 0.5**"（实现 `floor(input+0.5)`，实测 `round_float1(−2.5)=−2`）、`sign` = "If X == 0, returns **1**"（实测成立）、`fmod` = "remainder of a/b with the **same sign as a**"（实测 `fmod(−0.25,1)=−0.25`）、`frac` = "fractional portion"（实现 `input - floor(input)`，实测 `frac(−0.25)=0.75`）、`step` = "one if **x ≥ a**"（实测边界含等号）；原子 `mod` 标签 Modulo、端口 `a`/`b`（标签 A/**Divisor**），**实测为 floor 基**（`mod(−0.25,1)=0.75`），与库函数 `fmod` 语义相反 | 按 §7.5.3 与分支文件 `references/SD_BUILTIN_FUNCTIONS_v2.5.0.md` 查表接线：GLSL `mod` 直接用原子 `mod`（已实测 floor 基）；HLSL/C `fmod` 用库函数 `fmod`；`round`/`frac`/`trunc`/`sign`/`clamp`/`saturate`/`step`/`smoothstep` 一律优先实例化库函数而非手搓（N27/I41/D35；实测基线见 `references/NATIVE_PROBE_RESULTS_v2.5.0.md`） |
-| T44 | 连线层**不校验类型/维度**：`mulscalar.a←float1`、`mulscalar.scalar←float2`、`mul.a←float2` 同时 `mul.b←float1`、`mulscalar(a=float1, scalar=float2)` 四类混维连线经 `newPropertyConnectionFromId` **全部返回连接（无异常）**；这些 `mul`/`mulscalar` 样本及 `mod(float2,float1)` cook 为 0。rain_text 的 16.0.3 补充实测又表明混维 `add`/`sub`/`pow` 可产生非零的部分/恒等式外观，结果形状跟随输入 `a`，所以“混维统一静默 0”不成立 | 不得以"连线成功/无异常"或“结果看似合理”证明类型正确；维度与类型必须在创建前按 §7.5.1 判定链解析（I40），创建后逐端口回读；不同维度必须改成同维或正确的标量节点（§7.5.3/§11.11/D34） |
-| T45 | **新建 PP 没有内部图**：`pp.getReferencedResource()` 对刚创建的 PP 返回 None，必须 `pp.newPropertyGraph(pp.getPropertyFromId('perpixel', Input), 'SDSBSFunctionGraph')` 实体化（属性 `perpixel`，label `Per pixel function`，`isFunctionOnly=True`）。PP 内部图的输出由 `SDSBSFunctionGraph.setOutputNode(node, True)` 标记**任意普通节点**（语料实测输出节点为 `pow`、`vector4`、`instance` 等），**不存在 "output 节点类型"** | 判断"缺输出"以 `getOutputNodes()` 为准（`loop whlie.sbs` 的 PP 内部图为 0 → 未标记输出，不是缺某类节点）；`sd_mcp_plugin` 未实现 `newPropertyGraph`，新建 PP 内部图必须走 SDK（`execute_sd_code`）（SOP-0B） |
+| T44 | 连线层**不校验类型/维度**：`mulscalar.a←float1`、`mulscalar.scalar←float2`、`mul.a←float2` 同时 `mul.b←float1`、`mulscalar(a=float1, scalar=float2)` 四类混维连线经 `newPropertyConnectionFromId` **全部返回连接（无异常）**；这些 `mul`/`mulscalar` 样本及 `mod(float2,float1)` cook 为 0。Case E 的 16.0.3 补充实测又表明混维 `add`/`sub`/`pow` 可产生非零的部分/恒等式外观，结果形状跟随输入 `a`，所以“混维统一静默 0”不成立 | 不得以"连线成功/无异常"或“结果看似合理”证明类型正确；维度与类型必须在创建前按 §7.5.1 判定链解析（I40），创建后逐端口回读；不同维度必须改成同维或正确的标量节点（§7.5.3/§11.11/D34） |
+| T45 | **新建 PP 没有内部图**：`pp.getReferencedResource()` 对刚创建的 PP 返回 None，必须 `pp.newPropertyGraph(pp.getPropertyFromId('perpixel', Input), 'SDSBSFunctionGraph')` 实体化（属性 `perpixel`，label `Per pixel function`，`isFunctionOnly=True`）。PP 内部图的输出由 `SDSBSFunctionGraph.setOutputNode(node, True)` 标记**任意普通节点**（语料实测输出节点为 `pow`、`vector4`、`instance` 等），**不存在 "output 节点类型"** | 判断"缺输出"以 `getOutputNodes()` 为准（`loop_example.sbs` 的 PP 内部图为 0 → 未标记输出，不是缺某类节点）；`sd_mcp_plugin` 未实现 `newPropertyGraph`，新建 PP 内部图必须走 SDK（`execute_sd_code`）（SOP-0B） |
 | T46 | **原生数值验证通路**：`graph.compute()` 阻塞至 cook 完成，`sd.tools.export.exportSDGraphOutputs(graph, dir, 'bmp')` 导出 24bit **线性** BMP（实测：线性候选距离 ≤0.002、sRGB 候选 ≥0.07），无需保存工程与外部渲染器即可取得真实求值结果 | 数值与循环语义取证优先走该通路（SOP-0B）；负值/大值先仿射编码进 `[0,1]` 再读；精度受 8bit 量化限制（±1/255）；每项探针须给出**两种竞争语义**的预期值并取最近者 |
 | T47 | **库函数实现图的取数陷阱**（三源核对时实测）：① `SDConnection.getOutputPropertyNode()` 返回的是**消费方**、`getInputPropertyNode()` 才是**源节点**（连接方向与直觉相反，反了就会把整张网表接错）；② `SDValueFloatN.get()` 返回结构化 `sdbasetypes.floatN`，对它 `str()` 只给 **6 位小数**（`9.0537e-05`→`9.1e-05`），逐分量读取才是精确值，比较必须按 **float32** 归一化；③ 节点坐标存在 float32 亚像素漂移（活动对象 `1189.3333740234375` vs 文件 `1189.33337`），跨源配对须按 3 位小数取整；④ 发行包里可能有**陈旧连接**（`distance_vec3` 中连向 `length_vec3` 已不存在的形参 `input_v`），活动对象里看不到、也不影响求值 | 库函数取数一律走 `scripts/dump_library_functions.py`（活动对象）+ `scripts/verify_library_functions.py`（独立 XML 解析）并做差分；不得只手写 XML 解析、不得用 `str()` 结果当真值、跨源配对不做精确坐标比较、不照抄文件里的边（§11.12/SOP-0B） |
 
@@ -949,7 +949,7 @@ def same_row(a_position, b_position, tolerance=2.0):
 | floatN × float1（N=2/3/4），纯表达式向量 | **`mulscalar`** | 向量 → **`a`**，标量 → **`scalar`** | 仅限非 Sequence-derived value |
 | floatN × float1（N=2/3/4），**Sequence-derived 向量** | **同维 `mul` + 显式广播 scalar→floatN** | valueN→a，broadcastN→b | RS6：真机 `mulscalar(Sequence(float4), const)` 不可靠 |
 | float1 × floatN（N=2/3/4） | **`mulscalar`** | 同上：向量始终放 `a`，与源码书写顺序无关 | 语料无反向先例，按对称处理 |
-| floatN × floatN（N=2/3/4，**同维**） | **`mul`** | `a`、`b` | **已确认：`mul` 接受同维向量**（现场确认 2026-09-22；语料虽无实例，但语义与端口一致） |
+| floatN × floatN（N=2/3/4，**同维**） | **`mul`** | `a`、`b` | **已确认：`mul` 接受同维向量**（现场确认 [historical validation]；语料虽无实例，但语义与端口一致） |
 | floatN × floatM（N≠M） | 无合法选择 | — | `mul` 只接受同维；维度不匹配属源码类型错误，先修 IR（I16），不得靠换节点掩盖 |
 | 向量归约（点积等） | `dot` | 按实例回读 | 端口读回 Float2 而实际上游为 Float3 → **端口类型不可信**；CRATE 16.0.3 原生用例的 float2/float3 同维点积均正确返回 float1，不必仅因端口读回为 `dot` 手造替代 |
 
@@ -961,7 +961,7 @@ def same_row(a_position, b_position, tolerance=2.0):
 | `sbs::function::mulscalar` | **`a`**、**`scalar`** | **`Vector`**、**`Scale`** | `a`=float2/3/4，`scalar`=float1 |
 
 - **顺序不可交换**：`mulscalar` 的向量位是 `a`（Vector）、标量位是 `scalar`（Scale）。源码写 `float * vec3` 也必须把向量接 `a`、标量接 `scalar`，不得按书写顺序绑定。
-- **`mul` 不广播 float1 到向量**：floatN×float1 必须改走 `mulscalar(a=vector, scalar=float1)`，或先明确广播为 floatN 再用同维 `mul`。Sun shower 中轴向量与正确的标量相乘却读出 0，原因正是 float3/float1 混维；同样的静默结果不代表所有其它混维运算都必为 0。I40 类型表覆盖每个 `mul`/`add`/`sub`/`div`/`pow` 的两侧维度，创建前断言同维。
+- **`mul` 不广播 float1 到向量**：floatN×float1 必须改走 `mulscalar(a=vector, scalar=float1)`，或先明确广播为 floatN 再用同维 `mul`。Case B 中轴向量与正确的标量相乘却读出 0，原因正是 float3/float1 混维；同样的静默结果不代表所有其它混维运算都必为 0。I40 类型表覆盖每个 `mul`/`add`/`sub`/`div`/`pow` 的两侧维度，创建前断言同维。
 - **只有小写 id 能被 API 解析**：实测 `getPropertyFromId('A'|'B'|'Vector'|'Scale', C.Input)` **全部返回 None**。因此连线、设参一律使用 `a`/`b`、`a`/`scalar`；`A`/`B`/`Vector`/`Scale` 仅用于向用户说明语义角色。
 - 两个定义的输出端口都是 `unique_filter_output`；不存在 `input1`/`input2`。
 - 把标签当端口 id 提交会直接失败或报错——这属于"猜端口"，按 N4/I11 判 FAIL（D34 新增此症状）。
@@ -976,7 +976,7 @@ def same_row(a_position, b_position, tolerance=2.0):
 6. **两类静默错误**：`mulscalar(a=float1, scalar=float1)` 在 16.0.3 静默返回 0（T33）；`scalar` 端口接向量类型不符。二者都可能"编译通过但结果错"，因此判错只能靠类型解析链与回读，不能靠图像。
 7. 只有乘法存在标量变体（`list_node_definitions` 过滤 `scalar` 仅返回 `sbs::function::mulscalar`，不存在 `divscalar`/`addscalar`）；`add`/`sub`/`div`/`pow` 的向量运算按 I16 显式同维或按分量展开。
 
-**GLSL 标量广播降级（I16）**：在 IR 逐处列出 `source expression / operand dimensions / explicit lowering / port bindings`。`vecN ± scalar`、`scalar − vecN`、`vecN / scalar`、`min/max/pow/mod(vecN,scalar)` 与 `clamp(vecN,scalar,scalar)` 先把 scalar 通过 `vectorN` 复制为 N 个同值分量，再接同维普通算术；减法保留源码左右次序。`vecN*scalar` 通常走 `mulscalar(a=vecN,scalar=s)`，Sequence-derived 向量按 RS6 显式广播后走同维 `mul`。`lerp(a,b,x)` 的 `x` 是本来就应为标量的权重，不误广播。每个降级后的普通二元节点要从源 IR 解析两侧维度并静态断言相同；详见 `CRATE_AT_DUSK_RETEST_GATES.md`。
+**GLSL 标量广播降级（I16）**：在 IR 逐处列出 `source expression / operand dimensions / explicit lowering / port bindings`。`vecN ± scalar`、`scalar − vecN`、`vecN / scalar`、`min/max/pow/mod(vecN,scalar)` 与 `clamp(vecN,scalar,scalar)` 先把 scalar 通过 `vectorN` 复制为 N 个同值分量，再接同维普通算术；减法保留源码左右次序。`vecN*scalar` 通常走 `mulscalar(a=vecN,scalar=s)`，Sequence-derived 向量按 RS6 显式广播后走同维 `mul`。`lerp(a,b,x)` 的 `x` 是本来就应为标量的权重，不误广播。每个降级后的普通二元节点要从源 IR 解析两侧维度并静态断言相同；详见 `CASE_C_RETEST_GATES.md`。
 
 #### 7.5.2 角度与向量组装：`atan2` / `vector2` / `cartesian`（官方语义）
 
@@ -1005,7 +1005,7 @@ def same_row(a_position, b_position, tolerance=2.0):
 
 **作废的旧指导**：旧规范写的"SD atan2 实测为 atan(a.y,a.x)；源代码 `atan(p.x,p.y)` 需输入 `p.yx`"——公式部分与官方一致（输入向量的 y 为垂直、x 为水平），但"**需交换 yx**"的指导是**错的**：按它接线会把分量对调，使角度镜像。现统一为"按（水平, 垂直）语义组装向量，不做交换"（本项已在 §11.9 与两处 case study 中同步更正）。
 
-**GLSL 矩阵移植门槛**：`matN` 构造器中的向量是列；`M*v` 要从列转出行并逐行与 `v` 点乘，`v*M` 则逐列点乘。每个不同矩阵用非对称且含非零/符号分量的输入独立验证；Morphing 回测修正 ACES `mat3` 行列后，函数测试从 17/20 升为 20/20。纯数据转置校验见 `scripts/project_validation.py` 的 `glsl_matrix_rows`；详见 `MORPHING_RETEST_GATES.md` P2。
+**GLSL 矩阵移植门槛**：`matN` 构造器中的向量是列；`M*v` 要从列转出行并逐行与 `v` 点乘，`v*M` 则逐列点乘。每个不同矩阵用非对称且含非零/符号分量的输入独立验证；Case A 回测修正 ACES `mat3` 行列后，函数测试从 17/20 升为 20/20。纯数据转置校验见 `scripts/project_validation.py` 的 `glsl_matrix_rows`；详见 `CASE_A_RETEST_GATES.md` P2。
 
 **向量槽位与变换落点（I42/I44）**：`vector3(componentsin=vector2(x,y),componentslast=z)` 才是 `(x,y,z)`；`vector2(x,z)` 再接 `y` 得 `(x,z,y)`。`vector4` 同理，前 N−1 个有序分量进 `componentsin`，最后一个进 `componentslast`；按当前图定义回读端口后连接。对每个矩阵/旋转，枚举源码中每一处应用（位置、法线、软法线、光线方向、UV），逐点映射至 IR 并分别用非对称数据测试。`T=0` 不代表变换必为单位阵；CRATE 的 `rotZ(0.3)` 是反例。
 
@@ -1050,19 +1050,19 @@ def same_row(a_position, b_position, tolerance=2.0):
    `resources\documentation\pythonapi\html\_sources\pythonapi\modules\sbs_function.rst.txt`（85 个原子定义的官方 Label/Description/端口）与
    `resources\packages\functions.sbs`（171 个库函数，含官方描述与实现图），以及工具
    `scripts\lookup_sd_function.py --name <正则>` / `--library --name <正则> --impl`。
-9. **同维是硬要求；混维行为不可依赖（实测）**：`mod(float2, float1)`、`mul(float2, float1)` 在原生探针中静默返回 0，但 rain_text 的 16.0.3 实测表明混维 `add`/`sub`/`pow` 可能返回部分或恒等式外观，且输出形状跟随输入 `a`。这些都不是广播契约。需要向量×标量时，要么用 `mulscalar`（向量接 `a`/Vector、标量接 `scalar`/Scale），要么显式广播成同维（如 `vector2(b,b)`）。
+9. **同维是硬要求；混维行为不可依赖（实测）**：`mod(float2, float1)`、`mul(float2, float1)` 在原生探针中静默返回 0，但 Case E 的 16.0.3 实测表明混维 `add`/`sub`/`pow` 可能返回部分或恒等式外观，且输出形状跟随输入 `a`。这些都不是广播契约。需要向量×标量时，要么用 `mulscalar`（向量接 `a`/Vector、标量接 `scalar`/Scale），要么显式广播成同维（如 `vector2(b,b)`）。
 10. **连线成功 ≠ 类型正确（实测混维连线均被接受）**：`newPropertyConnectionFromId` 不校验维度与多态类型，错误只在 cook 时显现，既可能是静默 0，也可能是迷惑性的非零值。因此维度与类型必须在**创建前**按 §7.5.1 的判定链解析（I40），创建后逐端口回读；不得用"连线没报错"或“数值非零”当作类型正确（T44）。
 11. **数值语义用原生探针取证**：`graph.compute()`（真实 cook，阻塞至完成）+ `sd.tools.export.exportSDGraphOutputs(graph, dir, 'bmp')`（实测导出为 24bit **线性** BMP）→ 把结果与**两种竞争语义**的预期值比较取最近者。现成探针：`scripts/probe_sd_semantics.py`；实测基线与局限：`references/NATIVE_PROBE_RESULTS_v2.5.0.md`（SOP-0B/T46）。
 
 #### 7.5.4 时间来源双通道
 
-保留系统 `$time` 与自定义 `iTime`：Adobe 的系统变量文档说明 `$time` 由 Engine 宿主提供，Designer 内不能手动改变该值，而 Player 可用时间轴播放；`iTime` 用于用户手动控制及确定性逐帧 cook。推荐显式选择 `effectiveTime = useManualTime ? iTime : $time`，播放默认系统通道，验证/手动模式选自定义通道；整个迁移 IR 只使用该选择后的时间。记录两条 Get/参数身份、选择器默认值、非零通道验证和每次 cook 的有效时间。Designer 中 `$time` 静止不能作为删去 Player 时间路径的理由；`iTime` 在父图、函数形参、PP `#` 端口的实际读取路径须分别回读/校准（`MORPHING_RETEST_GATES.md`）。详见 `CRATE_AT_DUSK_RETEST_GATES.md`。
+保留系统 `$time` 与自定义 `iTime`：Adobe 的系统变量文档说明 `$time` 由 Engine 宿主提供，Designer 内不能手动改变该值，而 Player 可用时间轴播放；`iTime` 用于用户手动控制及确定性逐帧 cook。推荐显式选择 `effectiveTime = useManualTime ? iTime : $time`，播放默认系统通道，验证/手动模式选自定义通道；整个迁移 IR 只使用该选择后的时间。记录两条 Get/参数身份、选择器默认值、非零通道验证和每次 cook 的有效时间。Designer 中 `$time` 静止不能作为删去 Player 时间路径的理由；`iTime` 在父图、函数形参、PP `#` 端口的实际读取路径须分别回读/校准（`CASE_A_RETEST_GATES.md`）。详见 `CASE_C_RETEST_GATES.md`。
 
 **DI4 回测补充**：创建手动 `iTime` 前先按当前版本枚举可用图参数/PP 输入 API、实际端口与父图继承路径，不根据旧脚本硬编码属性 id；创建后回读默认值、参数身份与 `effectiveTime` 选择器。至少比较 t=0 与一个非零手动值，最好用两个不同非零值检查逐帧变化；系统 `$time` 的非零播放必须在能驱动 Engine 时间的宿主验证。只做 t=0 时仅可判静态帧 PASS，手动和 Player 动画均记未验证，不能以 Designer 静态 `$time` 否定系统通道。
 
 #### 7.5.5 GLSL 未初始化分量
 
-源码移植前在 typed IR/控制流图上执行分量级 definite-assignment：声明时未赋值的分量不在 must-defined 集，分支汇合取各路径已定义集合的交集；每次读取用 `check_definite_component_reads` 核对。读到未初始化分量时停止依赖该值的构建，呈现歧义并取得用户或源规格的明确初始化决策；把选择写入目标 IR、构建和独立 oracle，限定等价性结论。`vec3 positionRayon; positionRayon.y=-6.0;` 的 x/z 不得被默认 0 掩盖；Descente 项目中 x=z=0 是用户明确选择，不是 GLSL 通则（DI3）。
+源码移植前在 typed IR/控制流图上执行分量级 definite-assignment：声明时未赋值的分量不在 must-defined 集，分支汇合取各路径已定义集合的交集；每次读取用 `check_definite_component_reads` 核对。读到未初始化分量时停止依赖该值的构建，呈现歧义并取得用户或源规格的明确初始化决策；把选择写入目标 IR、构建和独立 oracle，限定等价性结论。`vec3 positionRayon; positionRayon.y=-6.0;` 的 x/z 不得被默认 0 掩盖；Case D 项目中 x=z=0 是用户明确选择，不是 GLSL 通则（DI3）。
 
 ### 7.6 调试中间量
 
@@ -1072,7 +1072,7 @@ def same_row(a_position, b_position, tolerance=2.0):
 - 多状态不必为了“出环”强制向量打包，除非调试目标就是验证 While 直接输出。
 任何调试连接都不得把 Exit Cond/Loop Body 内部节点跨分支复用。记录临时节点与连接，结束后恢复原逻辑和输出，检查 I1/I2/I6/I31 及指纹。
 
-**图内诊断抽头按 SOP-0C**：抽头本身可能改变多态节点类型解析；它的源节点身份、通道映射和数值量级必须独立核实。单条抽头读数只形成假设，不能直接形成根因结论。CRATE 项目的错误抽头两次把实际仍存在的立方体误判为“整段缺失”；详见 `CRATE_AT_DUSK_RETEST_GATES.md`。
+**图内诊断抽头按 SOP-0C**：抽头本身可能改变多态节点类型解析；它的源节点身份、通道映射和数值量级必须独立核实。单条抽头读数只形成假设，不能直接形成根因结论。CRATE 项目的错误抽头两次把实际仍存在的立方体误判为“整段缺失”；详见 `CASE_C_RETEST_GATES.md`。
 
 ### 7.7 源码函数边界与 Function Graph 映射
 
@@ -1218,7 +1218,7 @@ unroll 例外下仍然必须：
 
 #### 7.9.10 标准 While 连接模板（推荐连接方式，模板文件实测）
 
-**来源与性质**：本模板从实测模板文件 `loop whlie.sbs`（sha256 `30f259128cff08a00eb159a9160b2965d07e877ddf08cee5e2964d556942f64f`，work copy `E:\SD_AI\sdtext\loop_whlie.sbs`；SD 16.0.3 只读回读，见 §11.6）提取。它是**推荐的落地连接形态**，不是"唯一合法结构"：§7.9.3 是必须满足的规则，本节给出满足这些规则的推荐骨架、节点角色与几何。因源码语义（多出口、需要保留多份状态等）必须偏离时，按 §7.9.3 逐项说明并记录，不得因为"连线方便"而偏离。
+**来源与性质**：本模板从实测模板文件 `loop_example.sbs`（sha256 `[source fingerprint omitted]`，work copy `<example-project>/source.sbs`；SD 16.0.3 只读回读，见 §11.6）提取。它是**推荐的落地连接形态**，不是"唯一合法结构"：§7.9.3 是必须满足的规则，本节给出满足这些规则的推荐骨架、节点角色与几何。因源码语义（多出口、需要保留多份状态等）必须偏离时，按 §7.9.3 逐项说明并记录，不得因为"连线方便"而偏离。
 
 **模板使用前置（缺失任一项则不得声称该 While 可交付）**
 
@@ -1315,7 +1315,7 @@ set_a_body.value  <- add(get_a_rhs, const(步长))
 
 ### 7.10 语句树连接方式与跨度/节点预算（Set → Statement Sequence → Value Spine → Pure Terminal）
 
-来源：本节数值来自 16.0.3 对参考包 `OKColor_LCH.sbs` 的**只读**回读（§11.7）。该包 = 1 张复合图 + 15 张 Function Graph，按"语句 + 表达式树"组织：变量以 `Set` 落地并大量使用带内 `Get`，而不是把旧上游表达式/Set-value 拉成长线。该布局语料只说明图形结构；执行正确性另须按 RS2 检查 Sequence 两分支及输出可达性。
+来源：本节数值来自 16.0.3 对参考包 `color_example.sbs` 的**只读**回读（§11.7）。该包 = 1 张复合图 + 15 张 Function Graph，按"语句 + 表达式树"组织：变量以 `Set` 落地并大量使用带内 `Get`，而不是把旧上游表达式/Set-value 拉成长线。该布局语料只说明图形结构；执行正确性另须按 RS2 检查 Sequence 两分支及输出可达性。
 
 #### 7.10.1 总则
 
@@ -1417,19 +1417,19 @@ print('CROSS_BAND_SAMPLE', cross[:20])
 
 ### 7.11 真实项目数值门与导出门
 
-`REAL_PROJECT_VALIDATION.md` 是本节的详细证据与操作边界。新建函数必须在被上层实例调用前经过单函数非退化用例与独立 oracle 检验；结构审计、`setOutputNode` 调用成功、`graph.compute()` 和导出成功均不能替代数值检验。`Morphing Abstract_text` 的结构审计 0 错误，但单元数值只通过 3/20、图像 0/5，故不得把底层函数仅凭结构 PASS 提升为可供调用的已验证模块。
+`REAL_PROJECT_VALIDATION.md` 是本节的详细证据与操作边界。新建函数必须在被上层实例调用前经过单函数非退化用例与独立 oracle 检验；结构审计、`setOutputNode` 调用成功、`graph.compute()` 和导出成功均不能替代数值检验。`Case A initial build` 的结构审计 0 错误，但单元数值只通过 3/20、图像 0/5，故不得把底层函数仅凭结构 PASS 提升为可供调用的已验证模块。
 
 1. IR 静态门：每个 `Get` 与可达 `Set`/formal 的名字、维度、作用域和执行顺序匹配；跨边界数据均为显式 formal 且调用点实际连接。Designer 16.0.3 的 `get_floatN` 维度错读可静默为 0，多态端口类型回读不足以排除此错。逐函数 oracle 前执行 I42/I43/I44、广播维度与源码分支覆盖检查；`scripts/project_validation.py` 接受回读后的作用域解析快照，但静态 PASS 不是原生数值 PASS。
-2. 输出门：`setOutputNode` 后确认 `getOutputNodes()` 非空，确认输出根真实取到数据，并以区分零值/常量值的用例验证。16.0.3 的 PP 内图经 Morphing 与 Sun shower 两次回测：float1/float4 根可标，float2/float3 根标记后 `getOutputNodes()==[]` 且输出黑；诊断向量经 float4 载体/独立标量通道，未知版本先测。普通 Function Graph 不承受这一 PP 限制；但 CRATE 16.0.3 中 `while` 作为普通 Function marked root 虽列在 `getOutputNodes()`，首调用点仍全 0，改为纯算子组装根后恢复。`while/sequence/set` 直接作根默认不交付，偏离须当前会话最小探针和首调用点数值证据；不宣称所有结构节点在所有版本必定失败。
-3. PP 门：先确认 image source → PP `input` 与 PP → composition output 的实际连线，再做内部图/导出。该顺序是低成本检查；`rain_text1` 的 `{}` 响应未隔离出确切原因，不能宣称前置连接是 SDK 硬要求。
+2. 输出门：`setOutputNode` 后确认 `getOutputNodes()` 非空，确认输出根真实取到数据，并以区分零值/常量值的用例验证。16.0.3 的 PP 内图经 Case A 与 Case B 两次回测：float1/float4 根可标，float2/float3 根标记后 `getOutputNodes()==[]` 且输出黑；诊断向量经 float4 载体/独立标量通道，未知版本先测。普通 Function Graph 不承受这一 PP 限制；但 CRATE 16.0.3 中 `while` 作为普通 Function marked root 虽列在 `getOutputNodes()`，首调用点仍全 0，改为纯算子组装根后恢复。`while/sequence/set` 直接作根默认不交付，偏离须当前会话最小探针和首调用点数值证据；不宣称所有结构节点在所有版本必定失败。
+3. PP 门：先确认 image source → PP `input` 与 PP → composition output 的实际连线，再做内部图/导出。该顺序是低成本检查；`Case E` 的 `{}` 响应未隔离出确切原因，不能宣称前置连接是 SDK 硬要求。
 4. 尺寸门：按当前包的继承模式与值读回确定实际尺寸，再从导出文件头核对宽高。两项目有效设置方式不同，不指定全局固定继承组合。8192² 意外导出不能当作 1024² 验证结果。
-5. 坐标与比较门：分别记录**每个写入器**的文件行序、解码视图、图像顶部映射及源码坐标原点；用不对称 `$pos.y` ramp/分支 marker 和独立解析的一个 world-ray 像素确定方向，不能由较低 MAD 选择翻转。跨文件逐行比较必须先归一为同一视图并附 `top_rows`/`file_rows` 标签。Sun shower 的 SD BMP 与自制 oracle BMP 都声明正高度，但文件首行对应的图像位置不同；近镜像湖面甚至让**错误**翻转的 MAD 更低。按真实输出尺寸做 1:1 对照，报告两个方向的 MAD、RMSE、偏差、尾部分位/最大值及时间/参数。`rain_text1` 的 `uv.y = 0.5 - $pos.y` 是 Shadertoy 底原点迁移的实例，不是对所有 shader 的自动翻转规则。
+5. 坐标与比较门：分别记录**每个写入器**的文件行序、解码视图、图像顶部映射及源码坐标原点；用不对称 `$pos.y` ramp/分支 marker 和独立解析的一个 world-ray 像素确定方向，不能由较低 MAD 选择翻转。跨文件逐行比较必须先归一为同一视图并附 `top_rows`/`file_rows` 标签。Case B 的 SD BMP 与自制 oracle BMP 都声明正高度，但文件首行对应的图像位置不同；近镜像湖面甚至让**错误**翻转的 MAD 更低。按真实输出尺寸做 1:1 对照，报告两个方向的 MAD、RMSE、偏差、尾部分位/最大值及时间/参数。`Case E` 的 `uv.y = 0.5 - $pos.y` 是 Shadertoy 底原点迁移的实例，不是对所有 shader 的自动翻转规则。
 6. 工具状态门：MCP 空响应或超时等于结果未知；先查日志、阶段标记与只读图状态再决定是否重试，不推断“没有修改”。隔离的跨包函数探针和端到端结果冲突时分别报告，不把任一项扩展为通用结论。
-7. 参考图门：每个用于**验收**的 oracle 产物必须有同会话可复现的生成命令、源码与产物哈希、解码视图、分辨率和已覆盖源码 branch 清单；单位期望表优先当次从活模块现算，缓存表还须与其生成模块的源码哈希及表文件哈希同时匹配。源码已改而表未重生时只可 cross-check，不能据旧表判 FAIL/PASS。读模式实现/说明，不凭 `full`/`water` 等名称猜其覆盖范围。不能再生成的旧文件只能作 cross-check。Sun shower 中 `full` 漏折射、`water` 是法线编码，后续 `image` 才恢复完整分支；旧的水面结论须随参考源纠正而重判。小于数像素的特征不可作低分辨率方向地标。
+7. 参考图门：每个用于**验收**的 oracle 产物必须有同会话可复现的生成命令、源码与产物哈希、解码视图、分辨率和已覆盖源码 branch 清单；单位期望表优先当次从活模块现算，缓存表还须与其生成模块的源码哈希及表文件哈希同时匹配。源码已改而表未重生时只可 cross-check，不能据旧表判 FAIL/PASS。读模式实现/说明，不凭 `full`/`water` 等名称猜其覆盖范围。不能再生成的旧文件只能作 cross-check。Case B 中 `full` 漏折射、`water` 是法线编码，后续 `image` 才恢复完整分支；旧的水面结论须随参考源纠正而重判。小于数像素的特征不可作低分辨率方向地标。
 8. 组装图门：逐源码 section/branch 标记 `PORTED`/`OMITTED`/`BLOCKED`，从最终输出逆向验证应生效的因子皆可达（如 vignette，不能让占位常量替代已算因子）；除逐函数单元测试，还要看真实调用域的边界用例与成图后各语义区域的**有符号**误差。子函数单测通过但成图退化时，记录 hold 理由与解除所需的具体测量；已知缺失分支的区域先列预期差异，不嫁祸于通过单测的函数。图超过预算仍需报结构 FAIL，原生 cook 成功不豁免。
 9. 精度门：每项数值 oracle 记录 `encoding`、`enc`/`dec` 公式、BMP 位深、解码后一 LSB 容差、下游量化台阶及比值。8-bit direct = `1/255`，仿射 `enc=0.5+v/(2S)` = `2S/255`；若该容差已接近下游台阶，单函数 PASS 不能解释成图“一台阶”残差。被测值严格在 `(0,1)` 且离端点留出量化余量时优先 direct；零/一边界另测，其它值用不裁切仿射并标精度限制。辅助 `check_probe_precision` 的台阶四分之一界是保守归因规则，不是 Designer 引擎精度定律。
-10. **RGBA 导出门（DI5）**：四通道验收先在当前环境确认导出容器实际尺寸、通道数及已知两处不同 alpha 测试值（`check_rgba_export`）；选经验证保留 alpha 的 PNG/浮点格式等，再计算 RGBA MAD。Descente 的 16.0.3 BMP 读回 alpha 恒 1，而 PNG 有效；不能据此禁用所有 BMP 类型。若 alpha 未保留，只可报告 RGB 指标并注明传输限制，不把该差异归因于 PP 数学。按真实 graph id 和扩展名唯一匹配导出文件。
-11. **诊断编码前置门（DI6）**：在写任何编码节点前，从独立 oracle 计算本轮所有用例的原始分量，检查 `offset + gain×value` 均为有限且严格落在 `(margin,1-margin)`（`preflight_affine_probe`）；记录逆变换与解码后一 LSB 容差。超界则调整已证明范围/比例或使用经验证的浮点导出，不准把夹断的 PNG/BMP 当函数 FAIL。Descente 首次 `.5+.1×6.05=1.105` 误报属于夹具，不是 `DI_densityAt` 计算失败。
+10. **RGBA 导出门（DI5）**：四通道验收先在当前环境确认导出容器实际尺寸、通道数及已知两处不同 alpha 测试值（`check_rgba_export`）；选经验证保留 alpha 的 PNG/浮点格式等，再计算 RGBA MAD。Case D 的 16.0.3 BMP 读回 alpha 恒 1，而 PNG 有效；不能据此禁用所有 BMP 类型。若 alpha 未保留，只可报告 RGB 指标并注明传输限制，不把该差异归因于 PP 数学。按真实 graph id 和扩展名唯一匹配导出文件。
+11. **诊断编码前置门（DI6）**：在写任何编码节点前，从独立 oracle 计算本轮所有用例的原始分量，检查 `offset + gain×value` 均为有限且严格落在 `(margin,1-margin)`（`preflight_affine_probe`）；记录逆变换与解码后一 LSB 容差。超界则调整已证明范围/比例或使用经验证的浮点导出，不准把夹断的 PNG/BMP 当函数 FAIL。Case D 首次 `.5+.1×6.05=1.105` 误报属于夹具，不是 `DI_densityAt` 计算失败。
 
 ## 8. 症状诊断（D）
 
@@ -1472,7 +1472,7 @@ print('CROSS_BAND_SAMPLE', cross[:20])
 | D35 | 数值"看着对"但边界/负数/半整数处错，或报告称"SD 没有某函数" | §7.5.3/I41/N27 + 分支文件：按五类逐一核对——①`mod` vs `fmod`（GLSL floor 基 vs C 截断基，负数结果不同）；②`round` 半整数约定（`round_float1` = `floor(x+0.5)`，与"远离零/银行家"在负数半整数差 1）；③`sign(0)=1`（非 0）；④`frac` 是 floor 基（负数与 `fmod(x,1)` 差 1）；⑤`step` 边界为 `x ≥ a`。凡"SD 无某函数"的断言，必须同时查过原子目录（85）与库 Functions（171）；只查一源即断言 → 结论无效。原子 `mod` 用于可负操作数前必须有探针记录 |
 | D36 | 数值 PASS、跨度/碰撞 PASS，但 Sequence 出现在 Set/语句根左侧 | I30/L2/L12：先检查 depth 定义。若 depth 沿 producer→consumer 增大，却用 `x=base−depth×step`，则整图左右镜像。修正为正向 X 或改用从语句根向上游的 depth；计划与 SD 回读都执行逐条 `root.x < Sequence.x` 断言，不改连线即可做纯位置修复。此时逻辑 PASS、布局 FAIL，不得合并成总 PASS |
 | D37 | 操作数/输入读数正确，消费者恒 0 | 首查该 `mul`/普通算术的 IR 两侧维度与端口角色，再查标根和仿射传输是否截断负数；混维连线成功不是广播证据。若一整批无关探针皆 0，先对确切包做已知常量活性 cook、查包是否卸载/句柄过期，再讨论图语义 |
-| D38 | While 接线符合模板但累计值仍错 | 先查 Function 形参与 carried state 是否同名（Sun shower 的 `p` 遮蔽），再按固定输入 body、独立变换、两轮 vector carry、非恒定 scalar 更新、具体实例调用的次序逐步消融；旧“float2 carry 坏了”结论已被有效包重跑推翻 |
+| D38 | While 接线符合模板但累计值仍错 | 先查 Function 形参与 carried state 是否同名（Case B 的 `p` 遮蔽），再按固定输入 body、独立变换、两轮 vector carry、非恒定 scalar 更新、具体实例调用的次序逐步消融；旧“float2 carry 坏了”结论已被有效包重跑推翻 |
 | D39 | 子函数用例通过，组装图大区域错或持续有符号偏差 | 先比对源码 section/顶层 branch 的 `PORTED/OMITTED/BLOCKED` 表与成图的实边可达性；缺 hills、水分支或未接上的 vignette 不会被局部单测发现。按语义区域分桶看有符号误差，定位第一个偏离的源项；参考图须通过范围/视图/来源核验 |
 | D40 | 翻转图像后 MAD 更好，或两个 probe 的边界互相矛盾 | 不用 MAD 决定方向：按每个写入器的 `$pos.y` ramp/不对称地标测文件行顺序，所有跨文件逐行 join 使用相同视图标签；相机基向量还要独立解析地核验三分量，不能用其自身分支 marker 自证 |
 | D41 | 同一个 Function 在一处 caller 正常、另一处黑/NaN | 先做**该函数**的独立最小 consumer、常量/变化输入和有限值探针；不把某次 `fbm` 失败泛化成实例深度禁令，且 branchless `lerp` 中非激活支的 `NaN*0` 仍可污染整帧 |
@@ -1552,8 +1552,8 @@ ORACLE_PROVENANCE: source=<当次源码 sha256> table=<当次表文件 sha256|n/
 逐函数测试：`BRANCH_COVERAGE`、非对称向量用例、编码 `enc`/`dec`、解码后一 LSB 容差/下游量化步长比值；精度不足时标 WARN，不以 PASS 解释量化残差。
 诊断抽头（若有）：源节点真实回溯路径、源分量→BMP 通道、独立交叉证据、恢复原根与临时资源清理回读。
 原生探针记录（SOP-0B）：环境版本、目标临时资源、探针表达式、编码方式、实测值、两候选语义距离、判定，以及局限（8bit 量化、未覆盖范围）；未做探针时明确写"未验证"，不得用文档描述冒充实测
-回测专项门槛（`MORPHING_RETEST_GATES.md`）：PP 根节点维度/标记数、IR 必需节点至输出的实边可达闭包、逐函数非退化数值用例、最终图像 oracle、实际导出文件名及尺寸、布局方向、当前会话模块/资源残留分别记录 PASS/FAIL/未验证；不可用总体“PASS”掩盖布局或探针失败。
-复杂移植专项（`SUN_SHOWER_RETEST_GATES.md`）：源码 section/顶层 branch 的 PORTED/OMITTED/BLOCKED 表、目标包与源码模块身份/哈希、每轮常量活性 cook、预估/实际节点预算；图像比较须列每个写入器的文件行序与归一视图、参考生成命令/源码及文件哈希/分辨率/覆盖分支/同会话重建结果、双方向指标及语义区域有符号误差。参考不能重建或缺分支时，相关数字只能列 cross-check。部分交付分别写出已验证子集、遗漏/阻塞部分和解除 hold 的具体证据，不得合并成全量 PASS。
+回测专项门槛（`CASE_A_RETEST_GATES.md`）：PP 根节点维度/标记数、IR 必需节点至输出的实边可达闭包、逐函数非退化数值用例、最终图像 oracle、实际导出文件名及尺寸、布局方向、当前会话模块/资源残留分别记录 PASS/FAIL/未验证；不可用总体“PASS”掩盖布局或探针失败。
+复杂移植专项（`CASE_B_RETEST_GATES.md`）：源码 section/顶层 branch 的 PORTED/OMITTED/BLOCKED 表、目标包与源码模块身份/哈希、每轮常量活性 cook、预估/实际节点预算；图像比较须列每个写入器的文件行序与归一视图、参考生成命令/源码及文件哈希/分辨率/覆盖分支/同会话重建结果、双方向指标及语义区域有符号误差。参考不能重建或缺分支时，相关数字只能列 cross-check。部分交付分别写出已验证子集、遗漏/阻塞部分和解除 hold 的具体证据，不得合并成全量 PASS。
 保存文件路径；保存后回读；脚本执行入口与日志位置
 
 ## 未验证项
@@ -1735,9 +1735,9 @@ Substance Designer 本身在本规范中仍没有已证明的全局固定高度/
 ### 11.1 证据范围
 
 历史布局与迁移观察不再作为当前执行规则；当前规则仅见正文与 `REAL_PROJECT_VALIDATION.md`。下列 16.0.3 实测表保留作特定版本的可核查样本，不自动证明新工程已通过验证。
-### 11.6 While 连接规划实测基线（16.0.3，2026-09-22）
+### 11.6 While 连接规划实测基线（16.0.3，[historical validation]）
 
-环境：Substance Designer 16.0.3 + sd_mcp_plugin 3.3.0，模式 A。来源：本版规则修订时对已加载包 `E:/SD_AI/sdtext/Fabrice_Fractal_Port.sbs` 的**只读**回读（未创建、未修改、未保存任何图）。
+环境：Substance Designer 16.0.3 + sd_mcp_plugin 3.3.0，模式 A。来源：本版规则修订时对已加载包 `<example-project>/source.sbs` 的**只读**回读（未创建、未修改、未保存任何图）。
 
 | 项 | 实测结果 | 状态 |
 |---|---|---|
@@ -1753,7 +1753,7 @@ Substance Designer 本身在本规范中仍没有已证明的全局固定高度/
 
 **模板文件实测（§7.9.10 的来源）**
 
-来源：`loop whlie.sbs`（sha256 `30f259128cff08a00eb159a9160b2965d07e877ddf08cee5e2964d556942f64f`，17089 B；本会话只读回读，未修改未保存）。该文件是"计数器上下行 + 状态跨迭代"的单 While 模板。
+来源：`loop_example.sbs`（sha256 `[source fingerprint omitted]`，17089 B；本会话只读回读，未修改未保存）。该文件是"计数器上下行 + 状态跨迭代"的单 While 模板。
 
 | 项 | 实测结果 | 状态 |
 |---|---|---|
@@ -1771,13 +1771,13 @@ Substance Designer 本身在本规范中仍没有已证明的全局固定高度/
 
 结论：该文件的**循环内部连接方式**被采纳为 §7.9.10 模板（角色、端口级连接链、语义约定、几何）；上述三项缺陷被明确排除在模板之外，并作为"模板使用前置"写入 §7.9.10。
 
-### 11.7 语句树连接与跨度实测基线（`OKColor_LCH.sbs`，2026-09-22）
+### 11.7 语句树连接与跨度实测基线（`color_example.sbs`，[historical validation]）
 
-来源：附件 `OKColor_LCH.sbs`（sha256 `0372b50801013d2ae1be57806778a8799223042e7bd57429caaf8326362ed41f`，372065 B；work copy `E:\SD_AI\sdtext\OKColor_LCH.sbs`），SD 16.0.3 + sd_mcp_plugin 3.3.0，**只读**回读（未创建、未修改、未保存）。
+来源：附件 `color_example.sbs`（sha256 `[source fingerprint omitted]`，372065 B；work copy `<example-project>/source.sbs`），SD 16.0.3 + sd_mcp_plugin 3.3.0，**只读**回读（未创建、未修改、未保存）。
 
 | 项 | 实测结果 |
 |---|---|
-| 资源构成 | 1 张 `SDSBSCompGraph`（`OKColor_LCH_PJW`，5 节点）+ 15 张 `SDSBSFunctionGraph`（10–368 节点）+ Resources 目录 |
+| 资源构成 | 1 张 `SDSBSCompGraph`（`color_example_PJW`，5 节点）+ 15 张 `SDSBSFunctionGraph`（10–368 节点）+ Resources 目录 |
 | 全包规模 | 1058 节点；95 `sequence`、109 `set`、198 `get_*` |
 | 最大单图 | `find_gamut_intersection_cusp_Upper_half` 368 节点 / 43 Sequence / 43 Set / 95 Get；spanX 1568、spanY 11419、最长路径深度 47 |
 | 次大单图 | `compute_max_saturation` 238 节点 / 27 Sequence / 28 Set / 46 Get；spanX 2278、spanY 6240、深度 33 |
@@ -1798,9 +1798,9 @@ Substance Designer 本身在本规范中仍没有已证明的全局固定高度/
 用途：§7.10 的归一化跨度/节点预算与"读走上游 Get"规则的数值来源；同时作为"可复用逻辑打包为 Function Graph 并被多处调用"的现行证据（A8/§7.7）。
 **未验证**：该包无原生渲染对照；`band_count` 以 Set/语句根数近似（含 Ifelse/While 的图未逐语句展开）；`get('lab')`、`get('x')` 等未命中本地 Set 名的 Get 属函数形参或需按 I2 核对；跨版本数值可能变化，阈值按 §11.7 的包络解释而非精确门槛。
 
-### 11.8 乘法节点（`mul`/`mulscalar`）实测语料（2026-09-22）
+### 11.8 乘法节点（`mul`/`mulscalar`）实测语料（[historical validation]）
 
-来源：当前 SD 会话内**已加载的 4 个用户包**只读回读 —— `Fabrice_Fractal_Port.sbs`（raymarching 专业图）、`OKColor_LCH.sbs`、`loop whlie.sbs` 及其 `sdtext/` 副本；SD 16.0.3 + sd_mcp_plugin 3.3.0（未创建、未修改、未保存）。
+来源：当前 SD 会话内**已加载的 4 个用户包**只读回读 —— `case_f_graph.sbs`（raymarching 专业图）、`color_example.sbs`、`loop_example.sbs` 及其 `sdtext/` 副本；SD 16.0.3 + sd_mcp_plugin 3.3.0（未创建、未修改、未保存）。
 
 | 项 | 实测结果 |
 |---|---|
@@ -1812,12 +1812,12 @@ Substance Designer 本身在本规范中仍没有已证明的全局固定高度/
 | 其它算术 | `add` 223、`sub` 58、`div` 56、`pow` 12；以 float1 为主，向量维有 `add` Float3/Float4 与 `sub` Float3 的少数实例；另有 `add` 端口读回 `Float` 而实际收到 Float2 的反例 |
 | 标量变体清单 | `list_node_definitions(filter_text='scalar')` 仅返回 `sbs::function::mulscalar`；无 `divscalar`/`addscalar` |
 | 端口标识（16.0.3 回读） | `mul`：id `a`/`b`，标签 `A`/`B`；`mulscalar`：id `a`/`scalar`，标签 **`Vector`**/**`Scale`**；`getPropertyFromId` 只解析小写 id，标签名全部返回 None；两者输出端口均为 `unique_filter_output` |
-| 同维向量乘法 | `mul` **接受同维向量**（现场确认 2026-09-22）；语料无实例属采样局限，不代表不可用 → §7.5.1 按"可用"处理 |
+| 同维向量乘法 | `mul` **接受同维向量**（现场确认 [historical validation]）；语料无实例属采样局限，不代表不可用 → §7.5.1 按"可用"处理 |
 
 用途：§7.5.1 选择表与维度判定流程、N20/I40/D34/T40 的证据基础；同时解释了为什么"照端口类型或上游类型选节点"必然出现 `mul`/`mulscalar` 混用，以及为什么用标签名做端口 id 会失败。
 **未验证**：`mulscalar` 是否接受标量放 `a`、向量放 `scalar`（顺序颠倒）——规范按**不可交换**处理，不做探针；端口类型读回的泛型化行为是否随 SD 版本变化。
 
-### 11.9 角度与向量组装节点（`atan2`/`vector2`/`cartesian`）实测（2026-09-22）
+### 11.9 角度与向量组装节点（`atan2`/`vector2`/`cartesian`）实测（[historical validation]）
 
 来源：Adobe 节点文档（`Arc tangent 2` 词条，现场确认）+ 同一批已加载参考包的只读回读；SD 16.0.3 + sd_mcp_plugin 3.3.0（未创建、未修改、未保存）。
 
@@ -1837,7 +1837,7 @@ Substance Designer 本身在本规范中仍没有已证明的全局固定高度/
 
 **后续补充（同轮，SD 自带文档）**：`cartesian` 的端口已由 SD 自带 Python API 文档给出，**不再是未验证项**——输入 id **`rho`（标签 Length，float）**、**`theta`（标签 Angle，float）**，输出 float2，官方公式 `Length × Float2(cos(Angle), sin(Angle))`，与 `atan2` 互为反函数（T42/§7.5.2）。
 
-### 11.10 内建函数供给与数值语义实测（2026-09-22）
+### 11.10 内建函数供给与数值语义实测（[historical validation]）
 
 来源：SD 自带文件（**只读**）+ 官方文档原文，SD 16.0.3 + sd_mcp_plugin 3.3.0（未创建、未修改、未保存）：
 
@@ -1865,7 +1865,7 @@ Substance Designer 本身在本规范中仍没有已证明的全局固定高度/
 **已核对（见 §11.12）**：库函数**内部实现图已逐节点核对**（171 函数 / 2334 节点 / 2814 边；SD 活动对象与发行包 XML **0 处不一致**），台账见 `references/SD_LIBRARY_FUNCTIONS_v2.5.0.md` 与 `references/library_functions_v2.5.0.json`。
 **未验证**：`truncate_float1_decimals`、`smoothstep` 的**数值行为**未做探针实测（其实现图已在台账中逐节点核对）；库函数在非 float1 类型组合下的多态具体化未逐函数实测；`3d_functions.sbs`、`functions_hash.sbs` 未纳入本次核对。
 
-### 11.11 原生数值实测基线（真实 cook，2026-09-22）
+### 11.11 原生数值实测基线（真实 cook，[historical validation]）
 
 方法：在 SD 进程内新建**未保存临时包** → 每项探针独立 PP 合成图 → `setOutputNode` 标记输出 → `graph.compute()` 真实求值 → `exportSDGraphOutputs(graph, dir, 'bmp')`（24bit **线性**）→ 解析第 0 像素并与**两种竞争语义**的预期编码值取最近者。探针 22 项，唯一匹配距离 ≤0.002，次优候选 ≥0.0137。明细与局限见 `references/NATIVE_PROBE_RESULTS_v2.5.0.md`，脚本见 `scripts/probe_sd_semantics.py`。
 
@@ -1887,7 +1887,7 @@ Substance Designer 本身在本规范中仍没有已证明的全局固定高度/
 
 由此改写的规范条目：§7.5.3 规则 1（`mod` 直接可用）、§7.5.3 规则 9–11（混维行为不可依赖、连线不校验、原生探针）、T43（`mod` 实测）、新增 T44/T45/T46、§11.10（`mod` 负数语义转入"已实测"）、SOP-0A 步骤 3 与 **SOP-0B**、WHILE 基线（零迭代与最大迭代旋钮）。
 
-### 11.12 内建库函数实现图逐节点核对（2026-09-22）
+### 11.12 内建库函数实现图逐节点核对（[historical validation]）
 
 **目的**：后续调用库函数时有一份**可信台账**，而不是"文献说它大概是 floor 基"。
 

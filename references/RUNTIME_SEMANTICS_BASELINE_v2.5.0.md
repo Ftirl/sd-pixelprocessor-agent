@@ -1,6 +1,6 @@
 # Runtime semantics and conservative construction defaults
 
-This document records Substance Designer Pixel Processor / Function Graph observations and conservative construction defaults. A project observation is not a universal engine contract; the evidence limits and conflicting real-project results are in `REAL_PROJECT_VALIDATION.md` and `MORPHING_RETEST_GATES.md`.
+This document records Substance Designer Pixel Processor / Function Graph observations and conservative construction defaults. A project observation is not a universal engine contract; the evidence limits and conflicting real-project results are in `REAL_PROJECT_VALIDATION.md` and `CASE_A_RETEST_GATES.md`.
 
 Evidence class: `FIELD_VERIFIED` means observed while executing/cooking a specific real project. Record its Designer build, graph, input, and result. Use a current-session minimal probe and independent oracle when a decision depends on a behavior not established in that scope.
 
@@ -21,7 +21,7 @@ Consequences:
 
 **HISTORICAL OBSERVATION, CAUSE UNRESOLVED:** one project's same-name `Get` returned `0` while a statement Sequence output carried the expected value. The recorded test did not establish that the Get's consumer joined the later branch of the same output-reachable Sequence chain. Do not infer that a correctly sequenced Get is unreliable from this observation.
 
-**COUNTER-OBSERVATION (Morphing Abstract_text1, 16.0.3):** fresh same-scope Gets read written values (about 0.698/0.8 for 0.7/0.8); a nested While accumulator advanced across two outer iterations (decoded about 22). Adobe's documented model is that Sequence fully executes its first branch before the second and Get reads a typed variable in the current scope. An unconnected/unused Get does not itself execute a Set.
+**COUNTER-OBSERVATION (Case A rebuild, 16.0.3):** fresh same-scope Gets read written values (about 0.698/0.8 for 0.7/0.8); a nested While accumulator advanced across two outer iterations (decoded about 22). Adobe's documented model is that Sequence fully executes its first branch before the second and Get reads a typed variable in the current scope. An unconnected/unused Get does not itself execute a Set.
 
 Default connection proof for a lower statement reading `x`:
 
@@ -52,7 +52,7 @@ The identity operator is a construction strategy, not proof of correct return se
 
 ## RS4 — Verify Function Graph marked outputs and caller values
 
-**PROJECT OBSERVATION:** one `Set`-root Function returned `0`; appending a pure operator such as `add(spine, 0.0)` produced the expected value in that case. In `rain_text1`, one `mulscalar` marking attempt left `getOutputNodes()` empty, with cause unresolved.
+**PROJECT OBSERVATION:** one `Set`-root Function returned `0`; appending a pure operator such as `add(spine, 0.0)` produced the expected value in that case. In `Case E`, one `mulscalar` marking attempt left `getOutputNodes()` empty, with cause unresolved.
 
 Default and acceptance rule:
 

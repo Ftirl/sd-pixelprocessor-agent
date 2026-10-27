@@ -10,7 +10,7 @@ These checks turn production safety assumptions into executable release gates. R
 
 ## P2 — Output isolation
 
-The fixed `E:\SD_AI\_probe\out` path is removed. Every run receives a unique `tempfile.mkdtemp(prefix="sd_pp_probe_")` directory, optionally under `SD_PIXEL_AGENT_PROBE_DIR`. No pre-existing directory is cleared. The owner-marker helper refuses to remove directories it did not create.
+The fixed `<example-project>/source.sbs` path is removed. Every run receives a unique `tempfile.mkdtemp(prefix="sd_pp_probe_")` directory, optionally under `SD_PIXEL_AGENT_PROBE_DIR`. No pre-existing directory is cleared. The owner-marker helper refuses to remove directories it did not create.
 
 ## P3 — Built-in Function identity
 
@@ -42,6 +42,6 @@ A release is publishable only when this suite reports `RELEASE EVAL: PASS`.
 
 Release acceptance includes a pure-Python runtime-semantic policy layer and behavioral evals for normalized PP coordinates, Set→Sequence value transport, conservative pure terminal roots, `SAFETY_INVARIANT_002`, and the Sequence-vector `mul` broadcast rule. Known main-thread-hang topology is statically rejected rather than probed automatically. These static checks are not a substitute for the real-project numeric oracle.
 
-## Operational revision 2026-10-27
+## Operational revision [historical validation]
 
 See OPERATIONAL_RECOVERY.md and BEHAVIOR_REVISION. Release tests additionally exercise content-bound evidence invalidation, journals and writer leases, visual-decision scope, transport contracts, manual layout and archived native FTP fixtures, frame commit rules, and transactional installer fault injection. Archived data and pure-Python tests do not establish new native runtime measurements.

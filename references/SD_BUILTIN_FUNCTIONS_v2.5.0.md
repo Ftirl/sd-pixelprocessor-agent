@@ -4,7 +4,7 @@
 
 **适用范围**：Substance 3D Designer 16.0.3 + sd_mcp_plugin 3.3.0，只读核实。
 
-**本次回测增补**：当前原子定义没有 `sbs::function::length` 或 `sbs::function::lt`；库函数另有 `length_vec2/3`。向量长度可先查库接口，或用已核验类型的 `sqrt(dot(v,v))`；小于比较可在核验 `gt` 端口后交换操作数构造 `gt(a=y,b=x)`。这些是 16.0.3 当前供应源的结论，不跨版本推断；详见 `MORPHING_RETEST_GATES.md`。
+**本次回测增补**：当前原子定义没有 `sbs::function::length` 或 `sbs::function::lt`；库函数另有 `length_vec2/3`。向量长度可先查库接口，或用已核验类型的 `sqrt(dot(v,v))`；小于比较可在核验 `gt` 端口后交换操作数构造 `gt(a=y,b=x)`。这些是 16.0.3 当前供应源的结论，不跨版本推断；详见 `CASE_A_RETEST_GATES.md`。
 
 ---
 
